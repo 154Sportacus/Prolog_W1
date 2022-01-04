@@ -6,7 +6,7 @@
 :- dynamic cliente/2.
 :- dynamic meioTransporte/5.
 :- dynamic estafeta/2.
-:- dynamic morada/3.
+:- dynamic morada/5.
 :- dynamic entrega/7.
 :- dynamic encomenda/3.
 :- dynamic taxapraxo/3.
@@ -77,9 +77,8 @@
 	findall(IdEstafeta, estafeta(IdEstafeta,_), Lst), length(Lst, Len), Len == 1,
 	length(LE, LenLE), LenLE == 0.
 
-+morada(IdMorada, _,_) :-
-	findall(IdMorada, morada(IdMorada,_,_), Lst), length(Lst, Len), Len == 1.
-
++morada(IdMorada, _,_,_,_) :-
+	findall(IdMorada, morada(IdMorada,_,_,_,_), Lst), length(Lst, Len), Len == 1.5
 +encomenda(IdEntrega, Peso, Volume) :-
 	entrega(IdEntrega,_,_,_,_,_,_),
 	Peso > 0,
@@ -138,7 +137,7 @@ estafeta(5,[9,11,17,20]).
 
 
 %Extensão do Predicado Morada: Id, Rua, Freguesia,Longitude(x), Latitude(y)->{V,F}.
-%morada/3
+%morada/5
 morada(0,armazem,armazem, 41.205273, -8.530271).
 morada(1,ruaJorgeMilk,leitelho,41.209450, -8.568272).
 morada(2,ruaPiao,valongo,41.187970, -8.488052).
@@ -322,7 +321,7 @@ occ([X|L], max(Xm, Nm), Counts, FinalMax) :-
         occ(L, max(Xm,Nm), Counts2, FinalMax)).
 
 createListaMorada([],Temp,Result):-reverse(Temp, Result).
-createListaMorada([X|Tail],Temp,Result):- morada(X, Rua,_),
+createListaMorada([X|Tail],Temp,Result):- morada(X, Rua,_,_,_),
 														createListaMorada(Tail, [Rua|Temp], Result).
 
 
@@ -367,7 +366,7 @@ transportUsageInPeriod(DataInicial,DataFinal,Result):-
 	listfromIdEntregaToVeiculo(ListaIdEntrega,[],ListaVeiculo),
 	devolveOccorencia(bicicleta,ListaVeiculo,OcorrenciaBicicleta),
 	devolveOccorencia(mota,ListaVeiculo,OcorrenciaMota),
-	devolveOccorencia(carro,ListaVeiculo,OcorrenciaCarro),
+	devolveOccorencia5carro,ListaVeiculo,OcorrenciaCarro),
 	append([[(bicicleta,OcorrenciaBicicleta)],[(mota,OcorrenciaMota)],[(carro,OcorrenciaCarro)]],Result).
 
 % Query 8.
@@ -407,23 +406,46 @@ effDeliveryTime(TrueSpeed,Distance,EffTime):- EffTime is Distance/TrueSpeed.
 %            Merdas para criar o Grafo
 %_________________________________________________________
 
-aresta(Id1,Id2):- morada(Id1,Rua,Freguesia),morada(Id2,Rua,Freguesia),Id1\==Id2.
-aresta(Id1,Id2):-morada(Id1,Rua1,Freguesia),morada(Id2,Rua2,Freguesia),Id1\==Id2,abs(Id2-Id1)=<2.
-aresta(Id1,Id2):- morada(Id1,_,Freguesia1),morada(Id2,_,Freguesia2),Id1\=Id2,abs(Id2-Id1)=:=1.
+listaVertices(Result):- findall(Id,morada(Id,_,_,_,_),Result).
 
-listaVertices(Result):- findall(Id,morada(Id,_,_),Result).
+aresta(Id1,Id2):- morada(Id1,Rua,Freguesia,_,_),morada(Id2,Rua,Freguesia,_,_),Id1\==Id2.
+aresta(Id1,Id2):-morada(Id1,Rua1,Freguesia,_,_),morada(Id2,Rua2,Freguesia,_,_),Id1\==Id2,abs(Id2-Id1)=<2.
+aresta(Id1,Id2):- morada(Id1,_,Freguesia1,_,_),morada(Id2,_,Freguesia2,_,_),Id1\=Id2,abs(Id2-Id1)=:=1.
 
-listaArestas(Result):-findall(aresta(Id1,Id2),aresta(Id1,Id2),Result).
+
+listaArestasAux(X,[],Temp,Result):- X>0,append([aresta(X,0)],Temp,Result);append([],Temp,Result).
+listaArestasAux(X,[aresta(Id1,Id2)|Tail],Temp,Result):- 
+										   \+member(aresta(Id1,Id2),Temp),\+member(aresta(Id2,Id1),Temp),
+										   append([aresta(Id1,Id2)],Temp,NewTemp),
+										   NewX is max(Id1,Id2),
+										   listaArestasAux(NewX,Tail,NewTemp,Result)
+										   ;
+										   listaArestasAux(X,Tail,Temp,Result).
+
+
+
+listaArestas(Result):-findall(aresta(Id1,Id2),aresta(Id1,Id2),Temp),listaArestasAux(0,Temp,[],Result).
+
 
 g(grafo(Vertices,Arestas)):- listaVertices(Vertices),listaArestas(Arestas).
-
 % ________________________________________________________
 %_________________________________________________________
 
 %Extensao do predicado adjacente : Id1, Id2, Grafo -> {V, F, D}
 adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(X,Y),Arestas).
 adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(Y,X),Arestas).
- 
+
+
+%Pesquisa Primeiro em Largura (Breadth-first search (bfs)).
+%Extensão do Predicado B,_,_fs: Grafo, Origem, Destino, Caminho-> {V,F}.
+
+bfs2(Grafo,Dest,_,_,[[Dest|Tail]|_],[Dest|Tail]).
+bfs2(Grafo,Dest,[LA|Outros],Cam) :- LA=[Act|_],
+                                    findall([X|LA], (Dest\==Act,adjacente(X,Act,Grafo),\+member(X,LA)), Novos),
+                                    append(Outros,Novos,Todos),
+                                    bfs2(Grafo,Dest,Todos,Cam).
+
+bfs(Grafo,Orig,Dest,Cam) :- bfs2(Grafo,Orig,[[Dest]],Cam).
 
 
 
