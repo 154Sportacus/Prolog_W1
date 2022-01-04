@@ -12,7 +12,8 @@
 :- dynamic taxapraxo/3.
 :- dynamic precoServico/5.
 :- dynamic data/4.
-
+:- dynamic ilProfjam2/4.
+%:- dynamic distanciaPontos/5
 
 % I don't know what this does but SWI Prolog told me to put it here so I will
 :- discontiguous (+)/1.
@@ -53,7 +54,7 @@
 	findall(IdEntrega, entrega(IdEntrega,_,_,_,_,_,_), Lst), length(Lst, Len), Len == 1,
 	cliente(IdCliente,_),
 	estafeta(IdEstafeta,_),
-	morada(IdMorada,_,_),
+	morada(IdMorada,_,_,_,_),
 	Hi >= 1,
 	Hi =< 24,
 	Hf >= 1,
@@ -78,7 +79,7 @@
 	length(LE, LenLE), LenLE == 0.
 
 +morada(IdMorada, _,_,_,_) :-
-	findall(IdMorada, morada(IdMorada,_,_,_,_), Lst), length(Lst, Len), Len == 1.5
+	findall(IdMorada, morada(IdMorada,_,_,_,_), Lst), length(Lst, Len), Len == 1.
 +encomenda(IdEntrega, Peso, Volume) :-
 	entrega(IdEntrega,_,_,_,_,_,_),
 	Peso > 0,
@@ -141,14 +142,14 @@ estafeta(5,[9,11,17,20]).
 morada(0,armazem,armazem, 41.205273, -8.530271).
 morada(1,ruaJorgeMilk,leitelho,41.209450, -8.568272).
 morada(2,ruaPiao,valongo,41.187970, -8.488052).
-morada(3,ruaOceanoPacifico,valongo,41.196673, -8.516681).
-morada(4,ruaPedroCabral,valongo, 41.178034, -8.459965).
-morada(5,ruaDoPapel,amares,41.624043, -8.347159).
-morada(6,ruaDosPeoes, sao_vitor,41.557081, -8.398892).
-morada(7,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
-morada(8,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
-morada(9,ruaSaoJoao,manhente,41.547938, -8.621399).
-morada(10,ruaPadreGiesteira,marinhas,41.544324, -8.784028).
+%morada(3,ruaOceanoPacifico,valongo,41.196673, -8.516681).
+%morada(4,ruaPedroCabral,valongo, 41.178034, -8.459965).
+%morada(5,ruaDoPapel,amares,41.624043, -8.347159).
+%morada(6,ruaDosPeoes, sao_vitor,41.557081, -8.398892).
+%morada(7,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
+%morada(8,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
+%morada(9,ruaSaoJoao,manhente,41.547938, -8.621399).
+%morada(10,ruaPadreGiesteira,marinhas,41.544324, -8.784028).
 
 
 
@@ -366,7 +367,7 @@ transportUsageInPeriod(DataInicial,DataFinal,Result):-
 	listfromIdEntregaToVeiculo(ListaIdEntrega,[],ListaVeiculo),
 	devolveOccorencia(bicicleta,ListaVeiculo,OcorrenciaBicicleta),
 	devolveOccorencia(mota,ListaVeiculo,OcorrenciaMota),
-	devolveOccorencia5carro,ListaVeiculo,OcorrenciaCarro),
+	devolveOccorencia(carro,ListaVeiculo,OcorrenciaCarro),
 	append([[(bicicleta,OcorrenciaBicicleta)],[(mota,OcorrenciaMota)],[(carro,OcorrenciaCarro)]],Result).
 
 % Query 8.
@@ -396,50 +397,67 @@ weightCarriedInADay(D,M,A,IdEstafeta,Result):-
 	findall(IdEntrega, (entrega(IdEntrega,_,_,_,DataInicial,DataFinal,_), dataMaior(DataFinal,DataInicial),dataCompreendida(data(0,D,M,A),data(23,D,M,A),DataFinal)), ListaIdEntrega),
 	totalWeight(ListaIdEntrega,Result).
 
-trueSpeed(bicicleta,Weight,Vfinal):- Vfinal is 10-0,7*Weight.
-trueSpeed(mota,Weight,Vfinal):-Vfinal is 35-0,5*Weight.
-trueSpeed(carro,Weight,Vfinal):- Vfinal is 25-0,1*Weight.
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+%										Parte  											   %
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
+trueSpeed(bicicleta,Weight,Vfinal):- Vfinal is 10-(0,7*Weight).
+trueSpeed(mota,Weight,Vfinal):-Vfinal is 35-(0,5*Weight).
+trueSpeed(carro,Weight,Vfinal):- Vfinal is 25-(0,1*Weight).
 
 effDeliveryTime(TrueSpeed,Distance,EffTime):- EffTime is Distance/TrueSpeed.
 
-% ________________________________________________________
-%            Merdas para criar o Grafo
-%_________________________________________________________
+% ______________________
+% Criacao do Grafo
+%
 
 listaVertices(Result):- findall(Id,morada(Id,_,_,_,_),Result).
 
-aresta(Id1,Id2):- morada(Id1,Rua,Freguesia,_,_),morada(Id2,Rua,Freguesia,_,_),Id1\==Id2.
-aresta(Id1,Id2):-morada(Id1,Rua1,Freguesia,_,_),morada(Id2,Rua2,Freguesia,_,_),Id1\==Id2,abs(Id2-Id1)=<2.
-aresta(Id1,Id2):- morada(Id1,_,Freguesia1,_,_),morada(Id2,_,Freguesia2,_,_),Id1\=Id2,abs(Id2-Id1)=:=1.
+aresta(Id1,Id2,Distancia):- morada(Id1,Rua,Freguesia,X1,Y1),morada(Id2,Rua,Freguesia,X2,Y2),Id1\==Id2,
+							distanciaPontos(X1,Y1,X2,Y2,Distancia).
+aresta(Id1,Id2,Distancia):-morada(Id1,Rua1,Freguesia,X1,Y1),morada(Id2,Rua2,Freguesia,X2,Y2),Id1\==Id2,abs(Id2-Id1)=<2,
+							distanciaPontos(X1,Y1,X2,Y2,Distancia).
+aresta(Id1,Id2,Distancia):- morada(Id1,_,Freguesia1,X1,Y1),morada(Id2,_,Freguesia2,X2,Y2),Id1\=Id2,abs(Id2-Id1)=:=1,
+							distanciaPontos(X1,Y1,X2,Y2,Distancia).
 
 
-listaArestasAux(X,[],Temp,Result):- X>0,append([aresta(X,0)],Temp,Result);append([],Temp,Result).
-listaArestasAux(X,[aresta(Id1,Id2)|Tail],Temp,Result):- 
-										   \+member(aresta(Id1,Id2),Temp),\+member(aresta(Id2,Id1),Temp),
-										   append([aresta(Id1,Id2)],Temp,NewTemp),
+listaArestasAux(X,[],Temp,Result):- X>0,
+									distanciaPontos(41.205273,-8.530271,41.187970, -8.488052,Dist),
+									append([aresta(X,0,Dist)],Temp,NewTemp),
+									reverse(NewTemp,Result)
+									;
+									append([],Temp,NewTemp),
+									reverse(NewTemp,Result).
+
+listaArestasAux(X,[aresta(Id1,Id2,Dist)|Tail],Temp,Result):- 
+										   \+member(aresta(Id1,Id2,Dist),Temp),\+member(aresta(Id2,Id1,Dist),Temp),
+										   append([aresta(Id1,Id2,Dist)],Temp,NewTemp),
 										   NewX is max(Id1,Id2),
 										   listaArestasAux(NewX,Tail,NewTemp,Result)
 										   ;
 										   listaArestasAux(X,Tail,Temp,Result).
 
 
-
-listaArestas(Result):-findall(aresta(Id1,Id2),aresta(Id1,Id2),Temp),listaArestasAux(0,Temp,[],Result).
+listaArestas(Result):-findall(aresta(Id1,Id2,Dist),aresta(Id1,Id2,Dist),Temp),listaArestasAux(0,Temp,[],Result).
 
 
 g(grafo(Vertices,Arestas)):- listaVertices(Vertices),listaArestas(Arestas).
-% ________________________________________________________
-%_________________________________________________________
+% ______________________
+% adjacente
+%
 
 %Extensao do predicado adjacente : Id1, Id2, Grafo -> {V, F, D}
-adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(X,Y),Arestas).
-adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(Y,X),Arestas).
+adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(X,Y,Dist),Arestas).
+adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(Y,X,Dist),Arestas).
 
+% ______________________
+% Algoritmos de pesquisa
+%
 
 %Pesquisa Primeiro em Largura (Breadth-first search (bfs)).
-%Extensão do Predicado B,_,_fs: Grafo, Origem, Destino, Caminho-> {V,F}.
+%Extensão do Predicado Bfs: Grafo, Origem, Destino, Caminho-> {V,F}.
 
-bfs2(Grafo,Dest,_,_,[[Dest|Tail]|_],[Dest|Tail]).
+bfs2(Grafo,Dest,[[Dest|Tail]|_],[Dest|Tail]).
 bfs2(Grafo,Dest,[LA|Outros],Cam) :- LA=[Act|_],
                                     findall([X|LA], (Dest\==Act,adjacente(X,Act,Grafo),\+member(X,LA)), Novos),
                                     append(Outros,Novos,Todos),
@@ -448,4 +466,29 @@ bfs2(Grafo,Dest,[LA|Outros],Cam) :- LA=[Act|_],
 bfs(Grafo,Orig,Dest,Cam) :- bfs2(Grafo,Orig,[[Dest]],Cam).
 
 
+%Pesquisa Primeiro em Profundidade (Depth-first search (dfs)).
 
+dfsAux(_,A,[A|P1],[A|P1]).
+dfsAux(G,A,[Y|P1],P) :- adjacente(X,Y,G),
+ 						  \+ memberchk(X,[Y|P1]), 
+ 						  dfsAux(G,A,[X,Y|P1],P).
+
+dfs(Grafo,A,B,P) :- dfsAux(G,A,[B],P). 
+
+
+%Busca Iterativa Limitada em Profundidade. 										
+%Extensao do predicado ilProfjam: Grafo,Orig,Dest,Caminho ~> {V,F}  
+
+ilProfjam2(G,A,[Y|P1],ListHldr,Max,Max,P):-NewXSave is NewMax+1 ,ilProfjam2(G,A,ListHldr,ListHldr,0,NewMax,P).
+ilProfjam2(G,A,[A|P1],ListHldr,X,Max,[A|P1]).
+ilProfjam2(G,A,[Y|P1],ListHldr,X,Max,P) :- adjacente(X,Y,G),
+ 						 		 \+ memberchk(X,[Y|P1]), 
+ 						  		ilProfjam2(G,A,[X,Y|P1],P).
+
+ilProfjam(Grafo,A,B,P) :- ilProfjam2(G,A,[B],[B],0,1,P).
+
+% ______________________
+% Auxiliares
+%
+distanciaPontos(X1,Y1,X2,Y2,Distancia):-R is sqrt((X1-X2)^2 + (Y1-Y2)^2),
+   	 									Distancia is R*1000.
