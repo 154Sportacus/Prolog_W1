@@ -13,6 +13,7 @@
 :- dynamic precoServico/5.
 :- dynamic data/4.
 :- dynamic ilProfjam2/4.
+:- dynamic tail/2.
 %:- dynamic distanciaPontos/5
 
 % I don't know what this does but SWI Prolog told me to put it here so I will
@@ -142,9 +143,9 @@ estafeta(5,[9,11,17,20]).
 morada(0,armazem,armazem, 41.205273, -8.530271).
 morada(1,ruaJorgeMilk,leitelho,41.209450, -8.568272).
 morada(2,ruaPiao,valongo,41.187970, -8.488052).
-%morada(3,ruaOceanoPacifico,valongo,41.196673, -8.516681).
-%morada(4,ruaPedroCabral,valongo, 41.178034, -8.459965).
-%morada(5,ruaDoPapel,amares,41.624043, -8.347159).
+morada(3,ruaOceanoPacifico,valongo,41.196673, -8.516681).
+morada(4,ruaPedroCabral,valongo, 41.178034, -8.459965).
+morada(5,ruaDoPapel,amares,41.624043, -8.347159).
 %morada(6,ruaDosPeoes, sao_vitor,41.557081, -8.398892).
 %morada(7,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
 %morada(8,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
@@ -398,14 +399,25 @@ weightCarriedInADay(D,M,A,IdEstafeta,Result):-
 	totalWeight(ListaIdEntrega,Result).
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-%										Parte  											   %
+%										Parte II										   %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 
-trueSpeed(bicicleta,Weight,Vfinal):- Vfinal is 10-(0,7*Weight).
-trueSpeed(mota,Weight,Vfinal):-Vfinal is 35-(0,5*Weight).
-trueSpeed(carro,Weight,Vfinal):- Vfinal is 25-(0,1*Weight).
+% ______________________
+% Queries
+%
 
-effDeliveryTime(TrueSpeed,Distance,EffTime):- EffTime is Distance/TrueSpeed.
+%CircuitoBFS
+
+circuitoBFS(Grafo,Dest,Path):-bfs(Grafo,0,Dest,Temp),
+							  reverse(Temp,NewTemp),
+							  tail(NewTemp,MissingTemp),
+							  append(Temp,MissingTemp,Path).
+
+%CircuitoDFS
+circuitoDFS(Grafo,Dest,Path):-dfs(Grafo,Dest,Temp),
+							  reverse(Temp,NewTemp),
+							  tail(NewTemp,MissingTemp),
+							  append(Temp,MissingTemp,Path).
 
 % ______________________
 % Criacao do Grafo
@@ -422,7 +434,7 @@ aresta(Id1,Id2,Distancia):- morada(Id1,_,Freguesia1,X1,Y1),morada(Id2,_,Freguesi
 
 
 listaArestasAux(X,[],Temp,Result):- X>0,
-									distanciaPontos(41.205273,-8.530271,41.187970, -8.488052,Dist),
+									distanciaPontos(41.205273,-8.530271,41.624043, -8.347159,Dist),
 									append([aresta(X,0,Dist)],Temp,NewTemp),
 									reverse(NewTemp,Result)
 									;
@@ -454,6 +466,9 @@ adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(Y,X,Dist),Arestas).
 % Algoritmos de pesquisa
 %
 
+funcaoMerdas(volume,R):-R is 0.
+funcaoMerdas(peso,R):- R is 1.
+
 %Pesquisa Primeiro em Largura (Breadth-first search (bfs)).
 %Extensão do Predicado Bfs: Grafo, Origem, Destino, Caminho-> {V,F}.
 
@@ -468,12 +483,17 @@ bfs(Grafo,Orig,Dest,Cam) :- bfs2(Grafo,Orig,[[Dest]],Cam).
 
 %Pesquisa Primeiro em Profundidade (Depth-first search (dfs)).
 
-dfsAux(_,A,[A|P1],[A|P1]).
-dfsAux(G,A,[Y|P1],P) :- adjacente(X,Y,G),
- 						  \+ memberchk(X,[Y|P1]), 
- 						  dfsAux(G,A,[X,Y|P1],P).
+dfs(G,B,Path):- dfs2(G,0,B,[0],Path).
 
-dfs(Grafo,A,B,P) :- dfsAux(G,A,[B],P). 
+dfs2(G, A, B, T, [B]) :-
+    head(T, B).
+
+dfs2(G, A, B, Historico, [A|Caminho]) :-
+    adjacente(A,Y,G),
+    C is A,
+    \+member(Y, Historico),
+    dfs2(G, Y, B, [Y|Historico], Caminho).
+
 
 
 %Busca Iterativa Limitada em Profundidade. 										
@@ -481,9 +501,7 @@ dfs(Grafo,A,B,P) :- dfsAux(G,A,[B],P).
 
 ilProfjam2(G,A,[Y|P1],ListHldr,Max,Max,P):-NewXSave is NewMax+1 ,ilProfjam2(G,A,ListHldr,ListHldr,0,NewMax,P).
 ilProfjam2(G,A,[A|P1],ListHldr,X,Max,[A|P1]).
-ilProfjam2(G,A,[Y|P1],ListHldr,X,Max,P) :- adjacente(X,Y,G),
- 						 		 \+ memberchk(X,[Y|P1]), 
- 						  		ilProfjam2(G,A,[X,Y|P1],P).
+%ilProfjam2(G,A,[Y|P1],ListHldr,X,Max,P) :- findall(adjacente(A,))
 
 ilProfjam(Grafo,A,B,P) :- ilProfjam2(G,A,[B],[B],0,1,P).
 
@@ -492,3 +510,15 @@ ilProfjam(Grafo,A,B,P) :- ilProfjam2(G,A,[B],[B],0,1,P).
 %
 distanciaPontos(X1,Y1,X2,Y2,Distancia):-R is sqrt((X1-X2)^2 + (Y1-Y2)^2),
    	 									Distancia is R*1000.
+
+tail([H|Tail],Result):-append([],Tail,Result).
+
+head([],0).
+head([Result],Result).
+head([Result|Tail],Result).
+
+trueSpeed(bicicleta,Weight,Vfinal):- Vfinal is 10-(0,7*Weight).
+trueSpeed(mota,Weight,Vfinal):-Vfinal is 35-(0,5*Weight).
+trueSpeed(carro,Weight,Vfinal):- Vfinal is 25-(0,1*Weight).
+
+effDeliveryTime(TrueSpeed,Distance,EffTime):- EffTime is Distance/TrueSpeed.
