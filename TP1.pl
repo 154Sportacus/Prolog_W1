@@ -165,7 +165,7 @@ entrega(3,4,1,4,data(10,11,12,2021),data(13,11,12,2021),5).
 entrega(4,1,2,4,data(17,27,11,2021),data(20,27,11,2021),2).
 entrega(5,2,4,2,data(12,20,9,2021),data(15,20,9,2021),2).
 entrega(6,4,1,10,data(9,13,12,2021),data(13,13,12,2021),5).
-entrega(7,5,1,5,data(12,17,10,2021),data(20,17,10,2021),3).
+entrega(7,5,1,1,data(12,17,10,2021),data(20,17,10,2021),3).
 entrega(8,5,2,4,data(16,27,11,2021),data(21,27,11,2021),3).
 entrega(9,3,5,3,data(9,31,10,2021),data(16,31,10,2021),4).
 entrega(10,5,3,5,data(9,17,10,2021),data(11,17,10,2021),4).
@@ -173,19 +173,20 @@ entrega(11,7,5,7,data(9,18,11,2021),data(16,18,11,2021),3).
 entrega(12,6,4,6,data(14,1,10,2021),data(19,1,10,2021),4).
 entrega(13,8,2,4,data(15,16,10,2021),data(19,16,10,2021),4).
 entrega(14,6,3,6,data(13,26,9,2021),data(16,26,9,2021),3).
-entrega(15,11,1,1,data(9,3,9,2021),data(12,3,9,2021),3).
-entrega(16,7,4,4,data(8,1,10,2021),data(10,1,10,2021),2).
-entrega(17,10,5,1,data(14,14,10,2021),data(18,14,10,2021),4).
-entrega(18,9,2,9,data(16,8,11,2021),data(18,8,11,2021),4).
-entrega(19,10,4,4,data(13,24,10,2021),data(17,24,10,2021),4).
-entrega(20,1,1,4,data(9,25,11,2021),data(13,27,11,2021),3).
+%entrega(15,11,1,1,data(9,3,9,2021),data(12,3,9,2021),3).
+%entrega(16,7,4,4,data(8,1,10,2021),data(10,1,10,2021),2).
+%entrega(17,10,5,1,data(14,14,10,2021),data(18,14,10,2021),4).
+%entrega(18,9,2,9,data(16,8,11,2021),data(18,8,11,2021),4).
+%entrega(19,10,4,4,data(13,24,10,2021),data(17,24,10,2021),4).
+%entrega(20,1,1,4,data(9,25,11,2021),data(13,27,11,2021),3).
+
 %Não entregues:
-entrega(15,11,1,1,data(9,3,9,2021),data(8,3,9,2021),3).
-entrega(16,7,4,4,data(8,1,10,2021),data(7,1,10,2021),2).
-entrega(17,10,5,1,data(14,14,10,2021),data(13,14,10,2021),4).
-entrega(18,9,2,9,data(16,8,11,2021),data(15,8,11,2021),4).
-entrega(19,10,4,4,data(13,24,10,2021),data(12,24,10,2021),4).
-entrega(20,1,1,4,data(9,25,11,2021),data(8,25,11,2021),3).
+%entrega(15,11,1,1,data(9,3,9,2021),data(8,3,9,2021),3).
+%entrega(16,7,4,4,data(8,1,10,2021),data(7,1,10,2021),2).
+%entrega(17,10,5,1,data(14,14,10,2021),data(13,14,10,2021),4).
+%entrega(18,9,2,9,data(16,8,11,2021),data(15,8,11,2021),4).
+%entrega(19,10,4,4,data(13,24,10,2021),data(12,24,10,2021),4).
+%entrega(20,1,1,4,data(9,25,11,2021),data(8,25,11,2021),3).
 
 
 
@@ -410,13 +411,13 @@ weightCarriedInADay(D,M,A,IdEstafeta,Result):-
 
 %Query 1.
 	%CircuitoBFS
-circuitoBfsSingleDelivery(Grafo,Dest,Path):-bfs(Grafo,armazem,Dest,Temp),
+circuitoBfs1Delivery(Grafo,Dest,Path):-bfs(Grafo,armazem,Dest,Temp),
 							  reverse(Temp,NewTemp),
 							  tail(NewTemp,MissingTemp),
 							  append(Temp,MissingTemp,Path).
 
 	%CircuitoDFS
-circuitoDfsSingleDelivery(Grafo,Dest,Path):-dfs(Grafo,armazem,Dest,Temp),
+circuitoDfs1Delivery(Grafo,Dest,Path):-dfs(Grafo,armazem,Dest,Temp),
 							  reverse(Temp,NewTemp),
 							  tail(NewTemp,MissingTemp),
 							  append(Temp,MissingTemp,Path).
@@ -457,11 +458,20 @@ g(grafo(Vertices,Arestas)):- listaVertices(Vertices),listaArestas(Arestas).
 
 %Query 3.	
 	% Circuitos com maior número de entregas (por volume e peso).
-maisEntregasPorMetrica(peso,Grafo,Result):- findall()
+mostByMetricAux(_,[],Temp,Result):-reverse(Temp,Result).
+mostByMetricAux(Head,Lista,Temp,Result):-scndTList(Head,Lista,0,Rua/PesoT),
+                                     append([Rua/PesoT],Temp,NewT),
+                                     elimElem(Head,Lista,[],NewLista),
+                                     head(NewLista,NewHead),
+                                     mostByMetricAux(NewHead,NewLista,NewT,Result).
+
+mostByMetric(peso,Grafo,Result):- findall(Rua/Peso,(morada(IdMorada,Rua,_,_,_),entrega(Id,_,_,IdMorada,_,_,_),encomenda(Id,Peso,_)),Lista1),
+                                  head(Lista1,Head),
+                                  mostByMetricAux(Head,Lista1,[],Temp),
+                                  maiorTuplo(Temp,Result).
 
 
-maisEntregasPorMetrica(volume,Grafo,)
-
+mostByMetric(volume,Grafo,Result):-findall(Rua/Volume,(morada(IdMorada,Rua,_,_,_),entrega(Id,_,_,IdMorada,_,_,_),encomenda(Id,_,Volume)),Result).
 
 
 
@@ -536,3 +546,32 @@ effDeliveryTime(TrueSpeed,Distance,EffTime):- EffTime is Distance/TrueSpeed.
 	%Extensao do predicado adjacente : Id1, Id2, Grafo -> {V, F, D}
 adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(X,Y,Dist),Arestas).
 adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(Y,X,Dist),Arestas).
+
+
+	%Elimina todas as ocorrências de um elemento de uma lista
+elimElem(_,[],Temp,Result):- reverse(Temp,Result).
+elimElem(X/_,[H/Peso|T],Temp,Result):- X == H , 
+                            elimElem(X/_,T,Temp,Result)
+                            ;
+                            X\==H,
+                            append([H/Peso],Temp,NewR),
+                            elimElem(X/_,T,NewR,Result).
+
+	%Devolve tuplos, com apenas uma ocorrência e o 2ºtuplo acumulado
+scndTList(Rua/_,[],PM, Rua/PM).
+scndTList(Rua/_,[Rua1/Metrica|T],PM,Result):- Rua\== Rua1,
+                                        scndTList(Rua/_,T,PM,Result)
+                                        ;
+                                        Rua==Rua1,
+                                        NewPM is PM+Metrica,
+                                        scndTList(Rua/_,T,NewPM,Result).
+
+maiorTuploAux(Result,[],Result).
+maiorTuploAux(Rua1/Q1,[Rua2/Q2|T],Result):- Q1>=Q2,
+                                            maiorTuploAux(Rua1/Q1,T,Result)
+                                            ;
+                                            Q1<Q2,
+                                            maiorTuploAux(Rua2/Q2,T,Result).
+
+
+maiorTuplo([H|T],Result):- maiorTuploAux(H,T,Result).
