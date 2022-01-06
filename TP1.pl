@@ -465,13 +465,16 @@ mostByMetricAux(Head,Lista,Temp,Result):-scndTList(Head,Lista,0,Rua/PesoT),
                                      head(NewLista,NewHead),
                                      mostByMetricAux(NewHead,NewLista,NewT,Result).
 
-mostByMetric(peso,Grafo,Result):- findall(Rua/Peso,(morada(IdMorada,Rua,_,_,_),entrega(Id,_,_,IdMorada,_,_,_),encomenda(Id,Peso,_)),Lista1),
+mostByMetric(peso,Result):- findall(Rua/Peso,(morada(IdMorada,Rua,_,_,_),entrega(Id,_,_,IdMorada,_,_,_),encomenda(Id,Peso,_)),Lista1),
                                   head(Lista1,Head),
                                   mostByMetricAux(Head,Lista1,[],Temp),
                                   maiorTuplo(Temp,Result).
 
 
-mostByMetric(volume,Grafo,Result):-findall(Rua/Volume,(morada(IdMorada,Rua,_,_,_),entrega(Id,_,_,IdMorada,_,_,_),encomenda(Id,_,Volume)),Result).
+mostByMetric(volume,Result):-findall(Rua/Volume,(morada(IdMorada,Rua,_,_,_),entrega(Id,_,_,IdMorada,_,_,_),encomenda(Id,_,Volume)),Lista1),
+								  head(Lista1,Head),
+                                  mostByMetricAux(Head,Lista1,[],Temp),
+                                  maiorTuplo(Temp,Result).
 
 
 
