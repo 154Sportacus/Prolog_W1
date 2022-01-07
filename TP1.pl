@@ -16,8 +16,11 @@
 :- dynamic tail/2.
 %:- dynamic distanciaPontos/5
 
+
 % I don't know what this does but SWI Prolog told me to put it here so I will
 :- discontiguous (+)/1.
+
+ pack_install(date_time).
 
 
 %Construção_dabase_de conhecimento%
@@ -49,7 +52,7 @@
 	Taxa > 0,
 	ClassEco > 0.
 
-
+ 
 % IdEntrega,IdCliente,IdEstafeta,IdMorada,Horai,Diai,Mesi,Anoi,Horaf,DiaF,MesF,AnoF,Avaliação
 +entrega(IdEntrega,IdCliente,IdEstafeta, IdMorada,data(Hi,Di,Mi,Ai),data(Hf,Df,Mf,Af),Aval) :-
 	findall(IdEntrega, entrega(IdEntrega,_,_,_,_,_,_), Lst), length(Lst, Len), Len == 1,
@@ -250,13 +253,15 @@ precoServico(18,1,bicicleta,200,214).
 precoServico(19,3,carro,150,170).
 precoServico(20,2,mota,154,169).
 
-%_______________________________
-%Queries.
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%Extensão do Predicado Entrega: Id, IdCliente, IdEstafeta,IdMorada, Horai, Diai, Mesi, Anoi, Horaf, Diaf, Mesf,Anof, Classificação-> {V,F}.
-%entrega/13
+%~~~~~~~~~~~~~~~~~~
+% Queries
+%~~~~~~~~~~~~~~~~~~
 
-% Query 1. Identificar o estafeta que utilizou mais vezes um meio de transporte mais ecológico;
+% Query 1. 
+	%Identificar o estafeta que utilizou mais vezes um meio de transporte mais ecológico;
 calculaAvaliacao([],0).
 calculaAvaliacao([Veiculo|Tail],X):-meioTransporte(Veiculo,_,_,_,ClassificacaoEcologica), %Serve para identificar a ClassificacaoEcologica referente a um veiculo.
 												calculaAvaliacao(Tail,NewX), %Rinse and repeat.
@@ -281,7 +286,8 @@ mostEcologicCourier(Result):- findall(IdEstafeta, estafeta(IdEstafeta,_), ListaI
 									 nth0(Indice,ListaAvaliacaoEcoFinal, MaxValue), %Calcula o Indice do estafeta que tem o maior valor de avaliação ecologica.
 									 Result is Indice+1. %devolve o resultado.
 
-% Query 2. Identificar que estafetas entregaram determinada(s) encomenda(s) a um determinado cliente;
+% Query 2. 
+	%Identificar que estafetas entregaram determinada(s) encomenda(s) a um determinado cliente;
 
 removeRepetidos([],ListaTemp,Result):-reverse(ListaTemp,Result).
 removeRepetidos([Id|Tail],ListaTemp,Result):- member(Id,ListaTemp),
@@ -308,7 +314,8 @@ profitDay(D,M,A,Result):- findall(IdEntrega,(entrega(IdEntrega,_,_,_,_,data(_,D,
 						  somaPrecos(ListaIdEntrega,Result).
 
 
-% Query 5. Identificar quais as zonas (e.g., rua ou freguesia) com maior volume de entregas por parte da Green Distribution;
+% Query 5. 
+	%Identificar quais as zonas (e.g., rua ou freguesia) com maior volume de entregas por parte da Green Distribution;
 occ(X,N,L) :-
     occ(L,max(null,0),[],max(X,N)).
 occ([], max(Xm, Nm), _, max(Xm, Nm)).
@@ -407,10 +414,8 @@ weightCarriedInADay(D,M,A,IdEstafeta,Result):-
 %										Parte II										   %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 
-estima(Rua2,Result):-morada(_,armazem,_,X1,Y1),morada(_,Rua2,_,X2,Y2),
-						  distanciaPontos(X1,Y1,X2,Y2,Result).
-
-goal(armazem).
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %~~~~~~~~~~~~~~~~~~
 % Queries
@@ -483,7 +488,45 @@ mostByMetric(volume,Result):-findall(Rua/Volume,(morada(IdMorada,Rua,_,_,_),entr
                                   mostByMetricAux(Head,Lista1,[],Temp),
                                   maiorTuplo(Temp,Result).
 
+%Query 4.
+	
 
+%Query 5.
+	%Escolher o circuito mais rápido (usando o critério da distância)
+
+fastestCircuitAAux(N,Rua,Lista,Custo,FinalLista/Custo):-N>2,
+													tail(Lista,Tail),
+								 					head(Tail,Rua2),
+								 					distanciaRuas(Rua,Rua2,Distancia),
+								 					NewCusto is 2*Custo-Distancia,
+								 					reverse(Lista,NewLista),
+								 					append(NewLista,Tail,FinalLista)
+								 					;
+								 					N=:=2,
+								  					tail(Lista,Tail),
+								  					NewCusto is 2*Custo,
+								  					reverse(Lista,NewLista),
+								  					append(NewLista,Tail,FinalLista).
+
+
+fastestCircuitA(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicial,DataFinal,_),
+								  dataMaior(DataFinal,DataInicial),
+								  morada(IdMorada,Rua,_,_,_),
+								  resolve_aestrela(Rua,Lista/Custo),
+								  length(Lista,N),
+								  fastestCircuitAAux(N,Rua,Lista,Custo,Result).
+								  
+%Query 6.
+	%Escolher o circuito mais ecológico (usando um critério de tempo)
+mostEcologicCircuit(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicial,DataFinal,_),
+								  dataMaior(DataFinal,DataInicial),
+								  encomenda(IdEntrega,Peso,_),
+								  morada(IdMorada,Rua,_,X1,Y1),
+								  estima(Rua,Estima).
+
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %~~~~~~~~~~~~~~~~~~
 % Algoritmos de pesquisa
@@ -524,7 +567,9 @@ ilProfjam2(G,A,[A|P1],ListHldr,X,Max,[A|P1]).
 ilProfjam(Grafo,A,B,P) :- ilProfjam2(G,A,[B],[B],0,1,P).
 
 %Pesquisa Informada:
-	
+	%Goal
+goal(armazem).
+
 	%Gulosa
 resolve_gulosa(Nodo, Caminho/Custo) :-
 	estima(Nodo, Estima),
@@ -592,6 +637,9 @@ adjacente2([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
 	NovoCusto is Custo + PassoCusto,
 	estima(ProxNodo, Est).
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 %~~~~~~~~~~~~~~~~~~
 % Auxiliares
 %~~~~~~~~~~~~~~~~~~
@@ -605,6 +653,10 @@ head([Result|Tail],Result).
 tail([H|Tail],Result):-append([],Tail,Result).
 
 	%Distancia entre dois pontos
+distanciaRuas(Rua1,Rua2,Distancia):-morada(_,Rua1,_,X1,Y1),morada(_,Rua2,_,X2,Y2),
+									R is sqrt((X1-X2)^2 + (Y1-Y2)^2),
+   	 								Distancia is R*100.
+
 distanciaPontos(X1,Y1,X2,Y2,Distancia):-R is sqrt((X1-X2)^2 + (Y1-Y2)^2),
    	 									Distancia is R*100.
 
@@ -638,7 +690,7 @@ scndTList(Rua/_,[Rua1/Metrica|T],PM,Result):- Rua\== Rua1,
                                         Rua==Rua1,
                                         NewPM is PM+Metrica,
                                         scndTList(Rua/_,T,NewPM,Result).
-
+    %Auxiliar a maiorTuplo
 maiorTuploAux(Result,[],Result).
 maiorTuploAux(Rua1/Q1,[Rua2/Q2|T],Result):- Q1>=Q2,
                                             maiorTuploAux(Rua1/Q1,T,Result)
@@ -646,15 +698,33 @@ maiorTuploAux(Rua1/Q1,[Rua2/Q2|T],Result):- Q1>=Q2,
                                             Q1<Q2,
                                             maiorTuploAux(Rua2/Q2,T,Result).
 
-
+    %Maior tupolo de uma lista
 maiorTuplo([H|T],Result):- maiorTuploAux(H,T,Result).
 
+	%Inverte uma lista
 inverso(Xs, Ys):-
 	inverso(Xs, [], Ys).
+
 
 inverso([], Xs, Xs).
 inverso([X|Xs],Ys, Zs):-
 	inverso(Xs, [X|Ys], Zs).
 
+	%Seleciona 
 seleciona(E, [E|Xs], Xs).
 seleciona(E, [X|Xs], [X|Ys]) :- seleciona(E, Xs, Ys).
+
+	%Estima a distancia de uma rua ao armazem
+estima(Rua2,Result):-morada(_,armazem,_,X1,Y1),morada(_,Rua2,_,X2,Y2),
+						  distanciaPontos(X1,Y1,X2,Y2,Result).
+
+	%Soma de horas com uma data.
+hourDateSum(Hour,data(H,D,M,A),data(HF,DF,MF,AF)):-
+									  date_time_stamp(date(A,M,D,H,0,0,_,_,_),Stamp),
+									  NewStamp is Stamp+(1+Hour)*3600,
+									  stamp_date_time(NewStamp, Date,'UTC'),
+									  date_time_value(hour, Date, HF),
+									  date_time_value(day, Date, DF),
+									  date_time_value(month, Date, MF),
+									  date_time_value(year, Date, AF).
+									  
