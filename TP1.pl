@@ -47,68 +47,68 @@
   Id>0.
 
 +meioTransporte(_,Preco,Vel,Taxa,ClassEco) :-
-	Preco > 0,
-	Vel > 0,
-	Taxa > 0,
-	ClassEco > 0.
+    Preco > 0,
+    Vel > 0,
+    Taxa > 0,
+    ClassEco > 0.
 
  
 % IdEntrega,IdCliente,IdEstafeta,IdMorada,Horai,Diai,Mesi,Anoi,Horaf,DiaF,MesF,AnoF,Avaliação
 +entrega(IdEntrega,IdCliente,IdEstafeta, IdMorada,data(Hi,Di,Mi,Ai),data(Hf,Df,Mf,Af),Aval) :-
-	findall(IdEntrega, entrega(IdEntrega,_,_,_,_,_,_), Lst), length(Lst, Len), Len == 1,
-	cliente(IdCliente,_),
-	estafeta(IdEstafeta,_),
-	morada(IdMorada,_,_,_,_),
-	Hi >= 1,
-	Hi =< 24,
-	Hf >= 1,
-	Hf =< 24,
-	dataMaior(data(Hi,Di,Mi,Ai), data(Hf,Df,Mf,Af)),
-	(
-	(member(Mi, [1,3,5,7,8,10,12]), Di=<31);
-	(member(Mi, [2]), Di=<28);
-	(member(Mi, [2]), 0 is mod(Ai,4), Di=<29);
-	(member(Mi, [4,6,9,11]), Di=<30)
-	),(
-	(member(Mf, [1,3,5,7,8,10,12]), Df=<31);
-	(member(Mf, [2]), Df=<28);
-	(member(Mf, [2]), 0 is mod(Af,4), Df=<29);
-	(member(Mf, [4,6,9,11]), Df=<30)
-	),
-	Aval >= 0,
-	Aval =< 5.
+    findall(IdEntrega, entrega(IdEntrega,_,_,_,_,_,_), Lst), length(Lst, Len), Len == 1,
+    cliente(IdCliente,_),
+    estafeta(IdEstafeta,_),
+    morada(IdMorada,_,_,_,_),
+    Hi >= 1,
+    Hi =< 24,
+    Hf >= 1,
+    Hf =< 24,
+    dataMaior(data(Hi,Di,Mi,Ai), data(Hf,Df,Mf,Af)),
+    (
+    (member(Mi, [1,3,5,7,8,10,12]), Di=<31);
+    (member(Mi, [2]), Di=<28);
+    (member(Mi, [2]), 0 is mod(Ai,4), Di=<29);
+    (member(Mi, [4,6,9,11]), Di=<30)
+    ),(
+    (member(Mf, [1,3,5,7,8,10,12]), Df=<31);
+    (member(Mf, [2]), Df=<28);
+    (member(Mf, [2]), 0 is mod(Af,4), Df=<29);
+    (member(Mf, [4,6,9,11]), Df=<30)
+    ),
+    Aval >= 0,
+    Aval =< 5.
 
 +estafeta(IdEstafeta, LE) :-
-	findall(IdEstafeta, estafeta(IdEstafeta,_), Lst), length(Lst, Len), Len == 1,
-	length(LE, LenLE), LenLE == 0.
+    findall(IdEstafeta, estafeta(IdEstafeta,_), Lst), length(Lst, Len), Len == 1,
+    length(LE, LenLE), LenLE == 0.
 
 +morada(IdMorada, _,_,_,_) :-
-	findall(IdMorada, morada(IdMorada,_,_,_,_), Lst), length(Lst, Len), Len == 1.
+    findall(IdMorada, morada(IdMorada,_,_,_,_), Lst), length(Lst, Len), Len == 1.
 +encomenda(IdEntrega, Peso, Volume) :-
-	entrega(IdEntrega,_,_,_,_,_,_),
-	Peso > 0,
-	Volume > 0.
+    entrega(IdEntrega,_,_,_,_,_,_),
+    Peso > 0,
+    Volume > 0.
 
 +taxaPrazo(Duracao, Preco) :-
-	Duracao >= 0,
-	Preco > 0.
+    Duracao >= 0,
+    Preco > 0.
 
 max_aux([(D,T)],(D,T)) :- !, true.
 max_aux([(D,_)|Xs], (Dm,Tm)):- max_aux(Xs, (Dm,Tm)), Dm >= D.
 max_aux([(D,T)|Xs], (Dm,_)):- max_aux(Xs, (D,T)), D > Dm.
 
 calcTaxaDuracao(Duracao, TaxaD) :-
-	findall((D,TaxasD), (taxaPrazo(D,TaxasD), D =< Duracao), Lst),
-	max_aux(Lst, (_, TaxaD)).
+    findall((D,TaxasD), (taxaPrazo(D,TaxasD), D =< Duracao), Lst),
+    max_aux(Lst, (_, TaxaD)).
 
 
 +precoServico(IdEntrega,Duracao,MeioTransporte,PrecoProduto,PrecoTotal) :-
-	entrega(IdEntrega,_,_,_,_,_,_),
-	Duracao >= 0,
-	calcTaxaDuracao(Duracao, TaxaD),
-	meioTransporte(MeioTransporte,_,_,TaxaMT,_),
-	PrecoProduto > 0,
-	PrecoTotal is TaxaMT + PrecoProduto + TaxaD.
+    entrega(IdEntrega,_,_,_,_,_,_),
+    Duracao >= 0,
+    calcTaxaDuracao(Duracao, TaxaD),
+    meioTransporte(MeioTransporte,_,_,TaxaMT,_),
+    PrecoProduto > 0,
+    PrecoTotal is TaxaMT + PrecoProduto + TaxaD.
 
 %cliente(#idCliente,[IdEntrega])-> {V,F}.
 %cliente/2
@@ -154,7 +154,7 @@ morada(7,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
 morada(8,pracaDoBocage, sao_vitor,41.555884, -8.401906).
 morada(9,ruaSaoJoao,manhente,41.547938, -8.621399).
 morada(10,ruaPadreGiesteira,marinhas,41.544324, -8.784028).
-				%Adicionadas.
+                %Adicionadas.
 morada(11,ruaDaRocha,caminha,41.881815,-8.816272).
 morada(12,ruaDoRovial,caminha,41.848053,-8.853980).
 morada(13,ruaDoRouxico,caminha,41.844075,-8.866999).
@@ -440,61 +440,61 @@ precoServico(93,1,mota,36,55).
 %~~~~~~~~~~~~~~~~~~
 
 % Query 1. 
-	%Identificar o estafeta que utilizou mais vezes um meio de transporte mais ecológico;
+    %Identificar o estafeta que utilizou mais vezes um meio de transporte mais ecológico;
 calculaAvaliacao([],0).
 calculaAvaliacao([Veiculo|Tail],X):-meioTransporte(Veiculo,_,_,_,ClassificacaoEcologica), %Serve para identificar a ClassificacaoEcologica referente a um veiculo.
-												calculaAvaliacao(Tail,NewX), %Rinse and repeat.
-												X is NewX+ClassificacaoEcologica. %atualiza o valor de NewX.
+                                                calculaAvaliacao(Tail,NewX), %Rinse and repeat.
+                                                X is NewX+ClassificacaoEcologica. %atualiza o valor de NewX.
 
 lista_IdEntregaToVeiculo([],ListaVeiculo,ListaFinal):- reverse(ListaVeiculo,ListaFinal). %Inverte a lista final.
 lista_IdEntregaToVeiculo([IdEntrega|Tail],ListaVeiculo,ListaFinal):- precoServico(IdEntrega,_,Veiculo,_,_), %Serve para identificar o veiculo utilizado na respectiva entrega.
-																			 lista_IdEntregaToVeiculo(Tail,[Veiculo|ListaVeiculo],ListaFinal). %Rinse and repeat para o proximo idEntrega.
+                                                                             lista_IdEntregaToVeiculo(Tail,[Veiculo|ListaVeiculo],ListaFinal). %Rinse and repeat para o proximo idEntrega.
 
 mostEcologicCourier1([],ListaAvaliacaoEco,ListaFinal):- reverse(ListaAvaliacaoEco,ListaFinal).
 mostEcologicCourier1([IdEstafeta|Tail],ListaAvaliacaoEco,ListaFinal):- findall(IdEntrega,entrega(IdEntrega,_,IdEstafeta,_,_,_,_), ListaIdEntrega), %Cria a lista de IdEntrega das entregas que um determinado estafeta realizou.
-																			  lista_IdEntregaToVeiculo(ListaIdEntrega,ListaVeiculo,ListaVeiculosFinal), %muda a lista de IdEntrega para lista de Veiculos
-																			  calculaAvaliacao(ListaVeiculosFinal,X), %calcula o valor da avaliação ecologica,
-																			  length(ListaVeiculosFinal,Y), %calcula o tamanho da lista.
-																			  NewX is X/Y, %atualiza o valor do X
-																			  mostEcologicCourier1(Tail,[NewX|ListaAvaliacaoEco],ListaFinal). %procede para o proximo Estafeta.
+                                                                              lista_IdEntregaToVeiculo(ListaIdEntrega,ListaVeiculo,ListaVeiculosFinal), %muda a lista de IdEntrega para lista de Veiculos
+                                                                              calculaAvaliacao(ListaVeiculosFinal,X), %calcula o valor da avaliação ecologica,
+                                                                              length(ListaVeiculosFinal,Y), %calcula o tamanho da lista.
+                                                                              NewX is X/Y, %atualiza o valor do X
+                                                                              mostEcologicCourier1(Tail,[NewX|ListaAvaliacaoEco],ListaFinal). %procede para o proximo Estafeta.
 
 
 mostEcologicCourier(Result):- findall(IdEstafeta, estafeta(IdEstafeta,_), ListaIdEstafeta), %cria uma lista com os Ids dos estafetas.
-									 mostEcologicCourier1(ListaIdEstafeta, ListaAvaliacaoEco,ListaAvaliacaoEcoFinal), %Cria uma lista de avaliações ecologicas dos estafetas.
-									 max_list(ListaAvaliacaoEcoFinal, MaxValue), %Procura o maior valor das avaliações ecologicas dos estafetas.
-									 nth0(Indice,ListaAvaliacaoEcoFinal, MaxValue), %Calcula o Indice do estafeta que tem o maior valor de avaliação ecologica.
-									 Result is Indice+1. %devolve o resultado.
+                                     mostEcologicCourier1(ListaIdEstafeta, ListaAvaliacaoEco,ListaAvaliacaoEcoFinal), %Cria uma lista de avaliações ecologicas dos estafetas.
+                                     max_list(ListaAvaliacaoEcoFinal, MaxValue), %Procura o maior valor das avaliações ecologicas dos estafetas.
+                                     nth0(Indice,ListaAvaliacaoEcoFinal, MaxValue), %Calcula o Indice do estafeta que tem o maior valor de avaliação ecologica.
+                                     Result is Indice+1. %devolve o resultado.
 
 % Query 2. 
-	%Identificar que estafetas entregaram determinada(s) encomenda(s) a um determinado cliente;
+    %Identificar que estafetas entregaram determinada(s) encomenda(s) a um determinado cliente;
 
 removeRepetidos([],ListaTemp,Result):-reverse(ListaTemp,Result).
 removeRepetidos([Id|Tail],ListaTemp,Result):- member(Id,ListaTemp),
-																		removeRepetidos(Tail,ListaTemp,Result).
+                                                                        removeRepetidos(Tail,ListaTemp,Result).
 removeRepetidos([Id|Tail],ListaTemp,Result):- \+member(Id,ListaTemp),
-																		removeRepetidos(Tail,[Id|ListaTemp],Result).
+                                                                        removeRepetidos(Tail,[Id|ListaTemp],Result).
 
 
 listClientCouriers(IdCliente,Result):- findall(IdEstafeta, entrega(_,IdCliente,IdEstafeta,_,_,_,_), ListaIdEstafeta),
-												removeRepetidos(ListaIdEstafeta,[],Result).
+                                                removeRepetidos(ListaIdEstafeta,[],Result).
 
 
 % Query 3. 
 
 listCourierClients(IdEstafeta,Result):- findall(IdCliente, entrega(_,IdCliente,IdEstafeta,_,_,_,_), ListaIdCliente),
-												removeRepetidos(ListaIdCliente,[],Result).
+                                                removeRepetidos(ListaIdCliente,[],Result).
 % Query 4. F
 somaPrecos([],0).
 somaPrecos([IdEntrega|Tail],Result):- precoServico(IdEntrega,_,_,_,PrecoF),
-												 somaPrecos(Tail,NewResult),
-												 Result is NewResult+PrecoF.
+                                                 somaPrecos(Tail,NewResult),
+                                                 Result is NewResult+PrecoF.
 
 profitDay(D,M,A,Result):- findall(IdEntrega,(entrega(IdEntrega,_,_,_,_,data(_,D,M,A),_)), ListaIdEntrega),
-						  somaPrecos(ListaIdEntrega,Result).
+                          somaPrecos(ListaIdEntrega,Result).
 
 
 % Query 5. 
-	%Identificar quais as zonas (e.g., rua ou freguesia) com maior volume de entregas por parte da Green Distribution;
+    %Identificar quais as zonas (e.g., rua ou freguesia) com maior volume de entregas por parte da Green Distribution;
 occ(X,N,L) :-
     occ(L,max(null,0),[],max(X,N)).
 occ([], max(Xm, Nm), _, max(Xm, Nm)).
@@ -515,14 +515,14 @@ occ([X|L], max(Xm, Nm), Counts, FinalMax) :-
 
 createListaMorada([],Temp,Result):-reverse(Temp, Result).
 createListaMorada([X|Tail],Temp,Result):- morada(X, Rua,_,_,_),
-														createListaMorada(Tail, [Rua|Temp], Result).
+                                                        createListaMorada(Tail, [Rua|Temp], Result).
 
 
 mostFrequentZone(Result):- findall(IdMorada, entrega(_,_,_,IdMorada,_,_,_), ListaIdMorada),
-								  createListaMorada(ListaIdMorada, Temp, ListaMorada),
-								  occ(Result,_,ListaMorada).
+                                  createListaMorada(ListaIdMorada, Temp, ListaMorada),
+                                  occ(Result,_,ListaMorada).
 
-								  
+                                  
 
 % Query 6.
 avalAverage(IdEstafeta,Result):- findall(Avaliacao,entrega(_,_,IdEstafeta,_,_,_,Avaliacao),ListaAvaliacao),
@@ -531,66 +531,66 @@ avalAverage(IdEstafeta,Result):- findall(Avaliacao,entrega(_,_,IdEstafeta,_,_,_,
                                 Result is X/Y.
 % Query 7.
 dataMaior(data(HoraG,DiaG,MesG,AnoG),data(HoraP,DiaP,MesP,AnoP)):-
-	(AnoG>AnoP);
-	(AnoG==AnoP),(MesG>MesP);
-	(AnoG==AnoP),(MesG==MesP),(DiaG>DiaP);
-	(AnoG==AnoP),(MesG==MesP),(DiaG==DiaP),(HoraG>HoraP);
-	(AnoG==AnoP),(MesG==MesP),(DiaG==DiaP),(HoraG==HoraP).
+    (AnoG>AnoP);
+    (AnoG==AnoP),(MesG>MesP);
+    (AnoG==AnoP),(MesG==MesP),(DiaG>DiaP);
+    (AnoG==AnoP),(MesG==MesP),(DiaG==DiaP),(HoraG>HoraP);
+    (AnoG==AnoP),(MesG==MesP),(DiaG==DiaP),(HoraG==HoraP).
 
 
 dataCompreendida(DataInicial,DataFinal,DataTeste):-
-	dataMaior(DataTeste,DataInicial),dataMaior(DataFinal,DataTeste).
+    dataMaior(DataTeste,DataInicial),dataMaior(DataFinal,DataTeste).
 
 listfromIdEntregaToVeiculo([],Temp,Result):-
-	reverse(Temp,Result).
+    reverse(Temp,Result).
 listfromIdEntregaToVeiculo([X|T],Temp,Result):- 
-	precoServico(X,_,Veiculo,_,_),
-	listfromIdEntregaToVeiculo(T,[Veiculo|Temp],Result).
+    precoServico(X,_,Veiculo,_,_),
+    listfromIdEntregaToVeiculo(T,[Veiculo|Temp],Result).
 
 devolveOccorencia(_,[],0).
 devolveOccorencia(X,[X|T],R):-
-	devolveOccorencia(X,T,NewR),
-	R is NewR+1. 
+    devolveOccorencia(X,T,NewR),
+    R is NewR+1. 
 devolveOccorencia(X,[H|T],R):-
-	devolveOccorencia(X,T,R).
+    devolveOccorencia(X,T,R).
 
 transportUsageInPeriod(DataInicial,DataFinal,Result):- 
-	findall(IdEntrega, (entrega(IdEntrega,_,_,_,_,DataTeste,_),dataCompreendida(DataInicial,DataFinal,DataTeste)),ListaIdEntrega),
-	listfromIdEntregaToVeiculo(ListaIdEntrega,[],ListaVeiculo),
-	devolveOccorencia(bicicleta,ListaVeiculo,OcorrenciaBicicleta),
-	devolveOccorencia(mota,ListaVeiculo,OcorrenciaMota),
-	devolveOccorencia(carro,ListaVeiculo,OcorrenciaCarro),
-	append([[(bicicleta,OcorrenciaBicicleta)],[(mota,OcorrenciaMota)],[(carro,OcorrenciaCarro)]],Result).
+    findall(IdEntrega, (entrega(IdEntrega,_,_,_,_,DataTeste,_),dataCompreendida(DataInicial,DataFinal,DataTeste)),ListaIdEntrega),
+    listfromIdEntregaToVeiculo(ListaIdEntrega,[],ListaVeiculo),
+    devolveOccorencia(bicicleta,ListaVeiculo,OcorrenciaBicicleta),
+    devolveOccorencia(mota,ListaVeiculo,OcorrenciaMota),
+    devolveOccorencia(carro,ListaVeiculo,OcorrenciaCarro),
+    append([[(bicicleta,OcorrenciaBicicleta)],[(mota,OcorrenciaMota)],[(carro,OcorrenciaCarro)]],Result).
 
 % Query 8.
 
 numberDeliveriesInPeriod(DataInicial,DataFinal,Result):-
-	findall(IdEntrega, (entrega(IdEntrega,_,_,_,_,DataTeste,_),dataCompreendida(DataInicial,DataFinal,DataTeste)),ListaIdEntrega),
-	length(ListaIdEntrega,Result).
+    findall(IdEntrega, (entrega(IdEntrega,_,_,_,_,DataTeste,_),dataCompreendida(DataInicial,DataFinal,DataTeste)),ListaIdEntrega),
+    length(ListaIdEntrega,Result).
 
 % Query 9.
 
 deliveredNotDelivered(Result):-
-	findall(IdEntrega, (entrega(IdEntrega,_,_,_,DataInicial,DataFinal,_),dataMaior(DataFinal,DataInicial)),ListaIdEntrega),
-	findall(IdEntrega, (entrega(IdEntrega,_,_,_,DataInicial,DataFinal,_),dataMaior(DataInicial,DataFinal)),ListaIdNaoEntrega),
-	length(ListaIdEntrega,Entregues),
-	length(ListaIdNaoEntrega,NEntregues),
-	append([[("Entregues",Entregues)],[("Nao entregues",NEntregues)]],Result).
+    findall(IdEntrega, (entrega(IdEntrega,_,_,_,DataInicial,DataFinal,_),dataMaior(DataFinal,DataInicial)),ListaIdEntrega),
+    findall(IdEntrega, (entrega(IdEntrega,_,_,_,DataInicial,DataFinal,_),dataMaior(DataInicial,DataFinal)),ListaIdNaoEntrega),
+    length(ListaIdEntrega,Entregues),
+    length(ListaIdNaoEntrega,NEntregues),
+    append([[("Entregues",Entregues)],[("Nao entregues",NEntregues)]],Result).
 
 
 % Query 10.
 totalWeight([],0).
 totalWeight([IdEncomenda|T],R):-
-	encomenda(IdEncomenda,Peso,_),
-	totalWeight(T,NewPeso),
-	R is NewPeso+Peso.									
+    encomenda(IdEncomenda,Peso,_),
+    totalWeight(T,NewPeso),
+    R is NewPeso+Peso.                                  
 
 weightCarriedInADay(D,M,A,IdEstafeta,Result):-
-	findall(IdEntrega, (entrega(IdEntrega,_,_,_,DataInicial,DataFinal,_), dataMaior(DataFinal,DataInicial),dataCompreendida(data(0,D,M,A),data(23,D,M,A),DataFinal)), ListaIdEntrega),
-	totalWeight(ListaIdEntrega,Result).
+    findall(IdEntrega, (entrega(IdEntrega,_,_,_,DataInicial,DataFinal,_), dataMaior(DataFinal,DataInicial),dataCompreendida(data(0,D,M,A),data(23,D,M,A),DataFinal)), ListaIdEntrega),
+    totalWeight(ListaIdEntrega,Result).
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-%										Parte II										   %
+%                                       Parte II                                           %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -601,54 +601,54 @@ weightCarriedInADay(D,M,A,IdEstafeta,Result):-
 %~~~~~~~~~~~~~~~~~~
 
 %Query 1.
-	%CircuitoBFS
+    %CircuitoBFS
 circuitoBfs1Delivery(Grafo,Dest,Path):-bfs(Grafo,armazem,Dest,Temp),
-							  reverse(Temp,NewTemp),
-							  tail(NewTemp,MissingTemp),
-							  append(Temp,MissingTemp,Path).
+                              reverse(Temp,NewTemp),
+                              tail(NewTemp,MissingTemp),
+                              append(Temp,MissingTemp,Path).
 
-	%CircuitoDFS
+    %CircuitoDFS
 circuitoDfs1Delivery(Grafo,Dest,Path):-dfs(Grafo,armazem,Dest,Temp),
-							  reverse(Temp,NewTemp),
-							  tail(NewTemp,MissingTemp),
-							  append(Temp,MissingTemp,Path).
+                              reverse(Temp,NewTemp),
+                              tail(NewTemp,MissingTemp),
+                              append(Temp,MissingTemp,Path).
 %Query 2.
-		%Aresta
+        %Aresta
 aresta(Rua1,Rua2,Distancia):-morada(Id1,Rua1,Freguesia,X1,Y1),morada(Id2,Rua2,Freguesia,X2,Y2),Id1\==Id2,abs(Id2-Id1)=<2,
-							distanciaPontos(X1,Y1,X2,Y2,Distancia).
+                            distanciaPontos(X1,Y1,X2,Y2,Distancia).
 aresta(Rua1,Rua2,Distancia):- morada(Id1,Rua1,Freguesia1,X1,Y1),morada(Id2,Rua2,Freguesia2,X2,Y2),Id1\=Id2,abs(Id2-Id1)=:=1,
-							distanciaPontos(X1,Y1,X2,Y2,Distancia).
+                            distanciaPontos(X1,Y1,X2,Y2,Distancia).
 
-		%Auxiliar de listaArestasAux
+        %Auxiliar de listaArestasAux
 listaArestasAux(X,[],Temp,Result):- X>0,
-									morada(X,RuaX,_,Xx,Xy),
-									distanciaPontos(41.205273,-8.530271,Xx, Xy,Dist),
-									append([aresta(RuaX,armazem,Dist)],Temp,NewTemp),
-									reverse(NewTemp,Result)
-									;
-									append([],Temp,NewTemp),
-									reverse(NewTemp,Result).
+                                    morada(X,RuaX,_,Xx,Xy),
+                                    distanciaPontos(41.205273,-8.530271,Xx, Xy,Dist),
+                                    append([aresta(RuaX,armazem,Dist)],Temp,NewTemp),
+                                    reverse(NewTemp,Result)
+                                    ;
+                                    append([],Temp,NewTemp),
+                                    reverse(NewTemp,Result).
 listaArestasAux(X,[aresta(Rua1,Rua2,Dist)|Tail],Temp,Result):- 
-											morada(Id1,Rua1,_,_,_),
-											morada(Id2,Rua2,_,_,_),
-										   \+member(aresta(Rua1,Rua2,Dist),Temp),\+member(aresta(Rua2,Rua1,Dist),Temp),
-										   append([aresta(Rua1,Rua2,Dist)],Temp,NewTemp),
-										   NewX is max(Id1,Id2),
-										   listaArestasAux(NewX,Tail,NewTemp,Result)
-										   ;
-										   listaArestasAux(X,Tail,Temp,Result).
+                                            morada(Id1,Rua1,_,_,_),
+                                            morada(Id2,Rua2,_,_,_),
+                                           \+member(aresta(Rua1,Rua2,Dist),Temp),\+member(aresta(Rua2,Rua1,Dist),Temp),
+                                           append([aresta(Rua1,Rua2,Dist)],Temp,NewTemp),
+                                           NewX is max(Id1,Id2),
+                                           listaArestasAux(NewX,Tail,NewTemp,Result)
+                                           ;
+                                           listaArestasAux(X,Tail,Temp,Result).
 
-		%Lista das arestas do grafo
+        %Lista das arestas do grafo
 listaArestas(Result):-findall(aresta(Rua1,Rua2,Dist),aresta(Rua1,Rua2,Dist),Temp),listaArestasAux(0,Temp,[],Result).
 
-		%Lista dos vertices do grafo
+        %Lista dos vertices do grafo
 listaVertices(Result):- findall(Rua,morada(_,Rua,_,_,_),Result).
 
-		%Criacao do Grafo
+        %Criacao do Grafo
 g(grafo(Vertices,Arestas)):- listaVertices(Vertices),listaArestas(Arestas).
 
-%Query 3.	
-	% Circuitos com maior número de entregas (por volume e peso).
+%Query 3.   
+    % Circuitos com maior número de entregas (por volume e peso).
 mostByMetricAux(_,[],Temp,Result):-reverse(Temp,Result).
 mostByMetricAux(Head,Lista,Temp,Result):-scndTList(Head,Lista,0,Rua/PesoT),
                                      append([Rua/PesoT],Temp,NewT),
@@ -663,61 +663,61 @@ mostByMetric(peso,Result):- findall(Rua/Peso,(morada(IdMorada,Rua,_,_,_),entrega
 
 
 mostByMetric(volume,Result):-findall(Rua/Volume,(morada(IdMorada,Rua,_,_,_),entrega(Id,_,_,IdMorada,_,_,_),encomenda(Id,_,Volume)),Lista1),
-								  head(Lista1,Head),
+                                  head(Lista1,Head),
                                   mostByMetricAux(Head,Lista1,[],Temp),
                                   maiorTuplo(Temp,Result).
 
 %Query 4.
-	
+    
 
 %Query 5.
-	%Escolher o circuito mais rápido (usando o critério da distância)
+    %Escolher o circuito mais rápido (usando o critério da distância)
 
 fastestCircuitAAux(N,Rua,Lista,Custo,FinalLista/Custo):-N>2,
-													tail(Lista,Tail),
-								 					head(Tail,Rua2),
-								 					distanciaRuas(Rua,Rua2,Distancia),
-								 					NewCusto is 2*Custo-Distancia,
-								 					reverse(Lista,NewLista),
-								 					append(NewLista,Tail,FinalLista)
-								 					;
-								 					N=:=2,
-								  					tail(Lista,Tail),
-								  					NewCusto is 2*Custo,
-								  					reverse(Lista,NewLista),
-								  					append(NewLista,Tail,FinalLista).
+                                                    tail(Lista,Tail),
+                                                    head(Tail,Rua2),
+                                                    distanciaRuas(Rua,Rua2,Distancia),
+                                                    NewCusto is 2*Custo-Distancia,
+                                                    reverse(Lista,NewLista),
+                                                    append(NewLista,Tail,FinalLista)
+                                                    ;
+                                                    N=:=2,
+                                                    tail(Lista,Tail),
+                                                    NewCusto is 2*Custo,
+                                                    reverse(Lista,NewLista),
+                                                    append(NewLista,Tail,FinalLista).
 
 
 fastestCircuitA(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicial,DataFinal,_),
-								  dataMaior(DataFinal,DataInicial),
-								  morada(IdMorada,Rua,_,_,_),
-								  resolve_aestrela(Rua,Lista/Custo),
-								  length(Lista,N),
-								  fastestCircuitAAux(N,Rua,Lista,Custo,Result).
+                                  dataMaior(DataFinal,DataInicial),
+                                  morada(IdMorada,Rua,_,_,_),
+                                  resolve_aestrela(Rua,Lista/Custo),
+                                  length(Lista,N),
+                                  fastestCircuitAAux(N,Rua,Lista,Custo,Result).
 
 fastestCircuitG(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicial,DataFinal,_),
-								  dataMaior(DataFinal,DataInicial),
-								  morada(IdMorada,Rua,_,_,_),
-								  resolve_gulosa(Rua,Lista/Custo),
-								  length(Lista,N),
-								  fastestCircuitAAux(N,Rua,Lista,Custo,Result).
-								  								  
+                                  dataMaior(DataFinal,DataInicial),
+                                  morada(IdMorada,Rua,_,_,_),
+                                  resolve_gulosa(Rua,Lista/Custo),
+                                  length(Lista,N),
+                                  fastestCircuitAAux(N,Rua,Lista,Custo,Result).
+                                                                  
 %Query 6.
-	%Escolher o circuito mais ecológico (usando um critério de tempo)
+    %Escolher o circuito mais ecológico (usando um critério de tempo)
 mostEcologicCircuit(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicial,DataFinal,_),
-								  dataMaior(DataFinal,DataInicial),
-								  encomenda(IdEntrega,Peso,_),
-								  morada(IdMorada,Rua,_,X1,Y1),
-								  estima(Rua,Estima),
-								 custoDerivadoTransport(Estima,Peso,DataInicial,DataFinal,Temp),
-								 Result is 1. %% só para compilar o resto.
+                                  dataMaior(DataFinal,DataInicial),
+                                  encomenda(IdEntrega,Peso,_),
+                                  morada(IdMorada,Rua,_,X1,Y1),
+                                  estima(Rua,Estima),
+                                 custoDerivadoTransport(Estima,Peso,DataInicial,DataFinal,Temp),
+                                 Result is 1. %% só para compilar o resto.
 
 
 custoDerivadoTransport(DistE,Peso,DataInicial,DataFinal,Result):-trueSpeed(bicicleta,Peso,VBicicleta),
-																 VBicicleta >0,
-																 effDeliveryTime(VBicicleta,DistE,TimeBicicleta),
-																 hourDateSum(TimeBicicleta,DataInicial,DataFinalE),
-																 dataCompreendida(DataInicial,DataFinalE,DataFinal).
+                                                                 VBicicleta >0,
+                                                                 effDeliveryTime(VBicicleta,DistE,TimeBicicleta),
+                                                                 hourDateSum(TimeBicicleta,DataInicial,DataFinalE),
+                                                                 dataCompreendida(DataInicial,DataFinalE,DataFinal).
 
 %sadge :C
 
@@ -733,8 +733,8 @@ custoDerivadoTransport(DistE,Peso,DataInicial,DataFinal,Result):-trueSpeed(bicic
 
 %Pesquisa não Informada:
 
-	%Pesquisa Primeiro em Largura (Breadth-first search (bfs)).
-	%Extensão do Predicado Bfs: Grafo, Origem, Destino, Caminho-> {V,F}.
+    %Pesquisa Primeiro em Largura (Breadth-first search (bfs)).
+    %Extensão do Predicado Bfs: Grafo, Origem, Destino, Caminho-> {V,F}.
 bfs2(Grafo,Dest,[[Dest|Tail]|_],[Dest|Tail]).
 bfs2(Grafo,Dest,[LA|Outros],Cam) :- LA=[Act|_],
                                     findall([X|LA], (Dest\==Act,adjacente(X,Act,Grafo),\+member(X,LA)), Novos),
@@ -744,8 +744,8 @@ bfs2(Grafo,Dest,[LA|Outros],Cam) :- LA=[Act|_],
 bfs(Grafo,Orig,Dest,Cam) :- bfs2(Grafo,Orig,[[Dest]],Cam).
 
 
-	%Pesquisa Primeiro em Profundidade (Depth-first search (dfs)).
-	%%Extensão do Predicado Bfs: Grafo, Origem, Destino, Caminho-> {V,F}.
+    %Pesquisa Primeiro em Profundidade (Depth-first search (dfs)).
+    %%Extensão do Predicado Bfs: Grafo, Origem, Destino, Caminho-> {V,F}.
 dfs2(G, A, B, T, [B]) :-
     head(T, B).
 
@@ -756,8 +756,8 @@ dfs2(G, A, B, Historico, [A|Caminho]) :-
 
 dfs(G,Orig,B,Path):- dfs2(G,Orig,B,[Orig],Path).
 
-	%Busca Iterativa Limitada em Profundidade. 										
-	%Extensao do predicado ilProfjam: Grafo,Orig,Dest,Caminho ~> {V,F}  
+    %Busca Iterativa Limitada em Profundidade.                                      
+    %Extensao do predicado ilProfjam: Grafo,Orig,Dest,Caminho ~> {V,F}  
 
 ilProfjam2(G,A,[Y|P1],ListHldr,Max,Max,P):-NewXSave is NewMax+1 ,ilProfjam2(G,A,ListHldr,ListHldr,0,NewMax,P).
 ilProfjam2(G,A,[A|P1],ListHldr,X,Max,[A|P1]).
@@ -766,75 +766,73 @@ ilProfjam2(G,A,[A|P1],ListHldr,X,Max,[A|P1]).
 ilProfjam(Grafo,A,B,P) :- ilProfjam2(G,A,[B],[B],0,1,P).
 
 %Pesquisa Informada:
-	%Goal
+    %Goal
 goal(armazem).
 
-	%Gulosa
+    %Gulosa
 resolve_gulosa(Nodo, Caminho/Custo) :-
-	estima(Nodo, Estima),
-	agulosa([[Nodo]/0/Estima], InvCaminho/Custo/_),
-	inverso(InvCaminho, Caminho).
+    estima(Nodo, Estima),
+    agulosa([[Nodo]/0/Estima], InvCaminho/Custo/_),
+    inverso(InvCaminho, Caminho).
 
 agulosa(Caminhos, Caminho) :-
-	obtem_melhor_g(Caminhos, Caminho),
-	Caminho = [Nodo|_]/_/_,
-	goal(Nodo).
+    obtem_melhor_g(Caminhos, Caminho),
+    Caminho = [Nodo|_]/_/_,
+    goal(Nodo).
 
 agulosa(Caminhos, SolucaoCaminho) :-
-	obtem_melhor_g(Caminhos, MelhorCaminho),
-	seleciona(MelhorCaminho, Caminhos, OutrosCaminhos),
-	expande_gulosa(MelhorCaminho, ExpCaminhos),
-	append(OutrosCaminhos, ExpCaminhos, NovoCaminhos),
-    agulosa(NovoCaminhos, SolucaoCaminho).		
+    obtem_melhor_g(Caminhos, MelhorCaminho),
+    seleciona(MelhorCaminho, Caminhos, OutrosCaminhos),
+    expande_gulosa(MelhorCaminho, ExpCaminhos),
+    append(OutrosCaminhos, ExpCaminhos, NovoCaminhos),
+    agulosa(NovoCaminhos, SolucaoCaminho).      
 
 obtem_melhor_g([Caminho], Caminho) :- !.
 
 obtem_melhor_g([Caminho1/Custo1/Est1,_/Custo2/Est2|Caminhos], MelhorCaminho) :-
-	Est1 =< Est2, !,
-	obtem_melhor_g([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho).
-	
+    Est1 =< Est2, !,
+    obtem_melhor_g([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho).
+    
 obtem_melhor_g([_|Caminhos], MelhorCaminho) :- 
-	obtem_melhor_g(Caminhos, MelhorCaminho).
+    obtem_melhor_g(Caminhos, MelhorCaminho).
 
 expande_gulosa(Caminho, ExpCaminhos) :-
-	findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos).	
+    findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos). 
 
-	
-	%Algoritmo A*
+    
+    %Algoritmo A*
 resolve_aestrela(Nodo, Caminho/Custo) :-
-	estima(Nodo, Estima),
-	aestrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
-	inverso(InvCaminho, Caminho).
+    estima(Nodo, Estima),
+    aestrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
+    inverso(InvCaminho, Caminho).
 
 aestrela(Caminhos, Caminho) :-
-	obtem_melhor(Caminhos, Caminho),
-	Caminho = [Nodo|_]/_/_,
-	goal(Nodo).
+    obtem_melhor(Caminhos, Caminho),
+    Caminho = [Nodo|_]/_/_,
+    goal(Nodo).
 
 aestrela(Caminhos, SolucaoCaminho) :-
-	obtem_melhor(Caminhos, MelhorCaminho),
-	seleciona(MelhorCaminho, Caminhos, OutrosCaminhos),
-	expande_aestrela(MelhorCaminho, ExpCaminhos),
-	append(OutrosCaminhos, ExpCaminhos, NovoCaminhos),
-    aestrela(NovoCaminhos, SolucaoCaminho).	
+    obtem_melhor(Caminhos, MelhorCaminho),
+    seleciona(MelhorCaminho, Caminhos, OutrosCaminhos),
+    expande_aestrela(MelhorCaminho, ExpCaminhos),
+    append(OutrosCaminhos, ExpCaminhos, NovoCaminhos),
+    aestrela(NovoCaminhos, SolucaoCaminho). 
 
 obtem_melhor([Caminho], Caminho) :- !.
 obtem_melhor([Caminho1/Custo1/Est1,_/Custo2/Est2|Caminhos], MelhorCaminho) :-
-	Custo1 + Est1 =< Custo2 + Est2, !,
-	obtem_melhor([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho). 
+    Custo1 + Est1 =< Custo2 + Est2, !,
+    obtem_melhor([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho). 
 obtem_melhor([_|Caminhos], MelhorCaminho) :- 
-	           obtem_melhor(Caminhos, MelhorCaminho).
-
-
+               obtem_melhor(Caminhos, MelhorCaminho).
 
 expande_aestrela(Caminho, ExpCaminhos) :-
-	findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos).
+    findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos).
 
 adjacente2([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
-	aresta(Nodo, ProxNodo, PassoCusto),
-	\+member(ProxNodo, Caminho),
-	NovoCusto is Custo + PassoCusto,
-	estima(ProxNodo, Est).
+    aresta(Nodo, ProxNodo, PassoCusto),
+    \+member(ProxNodo, Caminho),
+    NovoCusto is Custo + PassoCusto,
+    estima(ProxNodo, Est).
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -843,36 +841,36 @@ adjacente2([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
 % Auxiliares
 %~~~~~~~~~~~~~~~~~~
 
-	%Cabeça de uma lista
+    %Cabeça de uma lista
 head([],0).
 head([Result],Result).
 head([Result|Tail],Result).
-   	
-   	%Cauda de uma lista
+    
+    %Cauda de uma lista
 tail([H|Tail],Result):-append([],Tail,Result).
 
-	%Distancia entre dois pontos
+    %Distancia entre dois pontos
 distanciaRuas(Rua1,Rua2,Distancia):-morada(_,Rua1,_,X1,Y1),morada(_,Rua2,_,X2,Y2),
-									R is sqrt((X1-X2)^2 + (Y1-Y2)^2),
-   	 								Distancia is R*100.
+                                    R is sqrt((X1-X2)^2 + (Y1-Y2)^2),
+                                    Distancia is R*100.
 
 distanciaPontos(X1,Y1,X2,Y2,Distancia):-R is sqrt((X1-X2)^2 + (Y1-Y2)^2),
-   	 									Distancia is R*100.
+                                        Distancia is R*100.
 
-  	%Velocidade real de um veiculo tendo em consideração o peso transportado
+    %Velocidade real de um veiculo tendo em consideração o peso transportado
 trueSpeed(bicicleta,Weight,Vfinal):- Vfinal is 10-(0.7*Weight).
 trueSpeed(mota,Weight,Vfinal):-Vfinal is 35-(0.5*Weight).
 trueSpeed(carro,Weight,Vfinal):- Vfinal is 25-(0.1*Weight).
-	
-	%Tempo de entrega tendo em consideração a distancia e a velociade real
+    
+    %Tempo de entrega tendo em consideração a distancia e a velociade real
 effDeliveryTime(TrueSpeed,Distance,EffTime):- EffTime is Distance/TrueSpeed.
 
-	%Extensao do predicado adjacente : Id1, Id2, Grafo -> {V, F, D}
+    %Extensao do predicado adjacente : Id1, Id2, Grafo -> {V, F, D}
 adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(X,Y,Dist),Arestas).
 adjacente(X,Y, grafo(_,Arestas)) :- member(aresta(Y,X,Dist),Arestas).
 
 
-	%Elimina todas as ocorrências de um elemento de uma lista
+    %Elimina todas as ocorrências de um elemento de uma lista
 elimElem(_,[],Temp,Result):- reverse(Temp,Result).
 elimElem(X/_,[H/Peso|T],Temp,Result):- X == H , 
                             elimElem(X/_,T,Temp,Result)
@@ -881,7 +879,7 @@ elimElem(X/_,[H/Peso|T],Temp,Result):- X == H ,
                             append([H/Peso],Temp,NewR),
                             elimElem(X/_,T,NewR,Result).
 
-	%Devolve tuplos, com apenas uma ocorrência e o 2ºtuplo acumulado
+    %Devolve tuplos, com apenas uma ocorrência e o 2ºtuplo acumulado
 scndTList(Rua/_,[],PM, Rua/PM).
 scndTList(Rua/_,[Rua1/Metrica|T],PM,Result):- Rua\== Rua1,
                                         scndTList(Rua/_,T,PM,Result)
@@ -900,30 +898,30 @@ maiorTuploAux(Rua1/Q1,[Rua2/Q2|T],Result):- Q1>=Q2,
     %Maior tupolo de uma lista
 maiorTuplo([H|T],Result):- maiorTuploAux(H,T,Result).
 
-	%Inverte uma lista
+    %Inverte uma lista
 inverso(Xs, Ys):-
-	inverso(Xs, [], Ys).
+    inverso(Xs, [], Ys).
 
 
 inverso([], Xs, Xs).
 inverso([X|Xs],Ys, Zs):-
-	inverso(Xs, [X|Ys], Zs).
+    inverso(Xs, [X|Ys], Zs).
 
-	%Seleciona 
+    %Seleciona 
 seleciona(E, [E|Xs], Xs).
 seleciona(E, [X|Xs], [X|Ys]) :- seleciona(E, Xs, Ys).
 
-	%Estima a distancia de uma rua ao armazem
+    %Estima a distancia de uma rua ao armazem
 estima(Rua2,Result):-morada(_,armazem,_,X1,Y1),morada(_,Rua2,_,X2,Y2),
-						  distanciaPontos(X1,Y1,X2,Y2,Result).
+                          distanciaPontos(X1,Y1,X2,Y2,Result).
 
-	%Soma de horas com uma data.
+    %Soma de horas com uma data.
 hourDateSum(Hour,data(H,D,M,A),data(HF,DF,MF,AF)):-
-									  date_time_stamp(date(A,M,D,H,0,0,_,_,_),Stamp),
-									  NewStamp is Stamp+(1+Hour)*3600,
-									  stamp_date_time(NewStamp, Date,'UTC'),
-									  date_time_value(hour, Date, HF),
-									  date_time_value(day, Date, DF),
-									  date_time_value(month, Date, MF),
-									  date_time_value(year, Date, AF).
-									  
+                                      date_time_stamp(date(A,M,D,H,0,0,_,_,_),Stamp),
+                                      NewStamp is Stamp+(1+Hour)*3600,
+                                      stamp_date_time(NewStamp, Date,'UTC'),
+                                      date_time_value(hour, Date, HF),
+                                      date_time_value(day, Date, DF),
+                                      date_time_value(month, Date, MF),
+                                      date_time_value(year, Date, AF).
+                                      
