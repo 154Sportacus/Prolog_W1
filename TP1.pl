@@ -148,9 +148,34 @@ morada(4,ruaPedroCabral,valongo, 41.178034, -8.459965).
 morada(5,ruaDoPapel,amares,41.624043, -8.347159).
 morada(6,ruaDosPeoes, sao_vitor,41.557081, -8.398892).
 morada(7,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
-morada(8,pracaDoBocage, sao_vitor,41.560921, -8.409264).
+morada(8,pracaDoBocage, sao_vitor,41.555884, -8.401906).
 morada(9,ruaSaoJoao,manhente,41.547938, -8.621399).
 morada(10,ruaPadreGiesteira,marinhas,41.544324, -8.784028).
+morada(11,rua15deAgosto,marinhas,41.548461,-8.769824).
+morada(12,ruaDoTascao,marinhas,41.541315,-8.774104).
+morada(13,ruaDaCabine,marinhas,41.563899,-8.785039).
+morada(14,ruaDaVarzea,marinhas,41.559312,-8.782597).
+morada(15,ruaDabandeira,viana_castelo,41.698379,-8.826769).
+morada(16,ruaCamposMonteiro,viana_castelo,41.705286,-8.822273).
+morada(17,ruaDoCarmo,viana_castelo,41.696621,-8.825472).
+morada(18,ruaErnestoRoma,viana_castelo,41.700160,-8.829559).
+morada(19,ruaDosFornos,viana_castelo,41.693104,-8.830416).
+morada(20,ruaDoRio,amares,41.623299,-8.363781).
+morada(21,ruaDoRibeiro,amares,41.679696,-8.372597).
+morada(22,ruaDaTravessa,amares,41.632044,-8.393596).
+morada(23,ruaDasFlores,porto,41.144263,-8.615262).
+morada(24,ruaSantaCatarina,porto,41.153721,-8.606836).
+morada(25,ruaDeCedofeira,porto,41.152512,-8.620263).
+morada(26,ruaDaRibeira,porto,41.140994,-8.614423).
+morada(27,ruaMiguelBombarda,porto,41.149649,-8.623065).
+morada(28,ruaDaIgreja,povoa_varzim,41.380570,-8.758976).
+morada(29,ruaDaJunqueira,povoa_varzim,41.379275,-8.766346).
+morada(30,ruaSantosMinho,povoa_varzim,41.379636,-8.765146).
+morada(31,ruaPrimeiroMaio,povoa_varzim,41.378384,-8.760870).
+morada(32,ruaDoCampino,apulia,41.479825,-8.770049).
+morada(33,ruaPadreEmilio,apulia,41.482122,-8.771364).
+morada(34,ruaDoSilva,apulia,41.482205,-8.772703).
+
 
 
 
@@ -405,6 +430,11 @@ weightCarriedInADay(D,M,A,IdEstafeta,Result):-
 %										Parte II										   %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 
+estima(Rua2,Result):-morada(_,armazem,_,X1,Y1),morada(_,Rua2,_,X2,Y2),
+						  distanciaPontos(X1,Y1,X2,Y2,Result).
+
+goal(armazem).
+
 %~~~~~~~~~~~~~~~~~~
 % Queries
 %~~~~~~~~~~~~~~~~~~
@@ -521,6 +551,40 @@ ilProfjam(Grafo,A,B,P) :- ilProfjam2(G,A,[B],[B],0,1,P).
 	%Gulosa
 
 	%Algoritmo A*
+resolve_aestrela(Nodo, Caminho/Custo) :-
+	estima(Nodo, Estima),
+	aestrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
+	inverso(InvCaminho, Caminho).
+
+aestrela(Caminhos, Caminho) :-
+	obtem_melhor(Caminhos, Caminho),
+	Caminho = [Nodo|_]/_/_,
+	goal(Nodo).
+
+aestrela(Caminhos, SolucaoCaminho) :-
+	obtem_melhor(Caminhos, MelhorCaminho),
+	seleciona(MelhorCaminho, Caminhos, OutrosCaminhos),
+	expande_aestrela(MelhorCaminho, ExpCaminhos),
+	append(OutrosCaminhos, ExpCaminhos, NovoCaminhos),
+    aestrela(NovoCaminhos, SolucaoCaminho).	
+
+obtem_melhor([Caminho], Caminho) :- !.
+obtem_melhor([Caminho1/Custo1/Est1,_/Custo2/Est2|Caminhos], MelhorCaminho) :-
+	Custo1 + Est1 =< Custo2 + Est2, !,
+	obtem_melhor([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho). 
+obtem_melhor([_|Caminhos], MelhorCaminho) :- 
+	           obtem_melhor(Caminhos, MelhorCaminho).
+
+
+
+expande_aestrela(Caminho, ExpCaminhos) :-
+	findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos).
+
+adjacente2([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
+	aresta(Nodo, ProxNodo, PassoCusto),
+	\+member(ProxNodo, Caminho),
+	NovoCusto is Custo + PassoCusto,
+	estima(ProxNodo, Est).
 
 %~~~~~~~~~~~~~~~~~~
 % Auxiliares
@@ -536,12 +600,12 @@ tail([H|Tail],Result):-append([],Tail,Result).
 
 	%Distancia entre dois pontos
 distanciaPontos(X1,Y1,X2,Y2,Distancia):-R is sqrt((X1-X2)^2 + (Y1-Y2)^2),
-   	 									Distancia is R*1000.
+   	 									Distancia is R*100.
 
   	%Velocidade real de um veiculo tendo em consideração o peso transportado
-trueSpeed(bicicleta,Weight,Vfinal):- Vfinal is 10-(0,7*Weight).
-trueSpeed(mota,Weight,Vfinal):-Vfinal is 35-(0,5*Weight).
-trueSpeed(carro,Weight,Vfinal):- Vfinal is 25-(0,1*Weight).
+trueSpeed(bicicleta,Weight,Vfinal):- Vfinal is 10-(0.7*Weight).
+trueSpeed(mota,Weight,Vfinal):-Vfinal is 35-(0.5*Weight).
+trueSpeed(carro,Weight,Vfinal):- Vfinal is 25-(0.1*Weight).
 	
 	%Tempo de entrega tendo em consideração a distancia e a velociade real
 effDeliveryTime(TrueSpeed,Distance,EffTime):- EffTime is Distance/TrueSpeed.
@@ -578,3 +642,13 @@ maiorTuploAux(Rua1/Q1,[Rua2/Q2|T],Result):- Q1>=Q2,
 
 
 maiorTuplo([H|T],Result):- maiorTuploAux(H,T,Result).
+
+inverso(Xs, Ys):-
+	inverso(Xs, [], Ys).
+
+inverso([], Xs, Xs).
+inverso([X|Xs],Ys, Zs):-
+	inverso(Xs, [X|Ys], Zs).
+
+seleciona(E, [E|Xs], Xs).
+seleciona(E, [X|Xs], [X|Ys]) :- seleciona(E, Xs, Ys).
