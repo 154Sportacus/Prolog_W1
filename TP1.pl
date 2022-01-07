@@ -159,6 +159,7 @@ morada(10,ruaPadreGiesteira,marinhas,41.544324, -8.784028).
 
 
 
+
 %ver idCliente, ou cliente com lista de entregas
 %Extensão do Predicado Entrega: Id, IdCliente, IdEstafeta,IdMorada, 
 %DataInicial(Horai,Diai,Mesi,Anoi), dataFinal(Horaf, Diaf, Mesf,Anof), Classificação-> {V,F}.
@@ -515,7 +516,14 @@ fastestCircuitA(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicial,Da
 								  resolve_aestrela(Rua,Lista/Custo),
 								  length(Lista,N),
 								  fastestCircuitAAux(N,Rua,Lista,Custo,Result).
-								  
+
+fastestCircuitG(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicial,DataFinal,_),
+								  dataMaior(DataFinal,DataInicial),
+								  morada(IdMorada,Rua,_,_,_),
+								  resolve_gulosa(Rua,Lista/Custo),
+								  length(Lista,N),
+								  fastestCircuitAAux(N,Rua,Lista,Custo,Result).
+								  								  
 %Query 6.
 	%Escolher o circuito mais ecológico (usando um critério de tempo)
 mostEcologicCircuit(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicial,DataFinal,_),
@@ -523,6 +531,10 @@ mostEcologicCircuit(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicia
 								  encomenda(IdEntrega,Peso,_),
 								  morada(IdMorada,Rua,_,X1,Y1),
 								  estima(Rua,Estima).
+								 custoDerivadoTransport(Estima,Peso,DataInicial,DataFinal,Temp),
+								 Result is 1. %% só par compilar o resto.
+
+custoDerivadoTransport(DistE,Peso,DataInicial,DataFinal,Result):-
 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
