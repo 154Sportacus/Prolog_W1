@@ -112,17 +112,17 @@ calcTaxaDuracao(Duracao, TaxaD) :-
 
 %cliente(#idCliente,[IdEntrega])-> {V,F}.
 %cliente/2
-cliente(1,[2,4]).
-cliente(2,[5]).
-cliente(3,[1,9]).
-cliente(4,[3,6]).
-cliente(5,[7,8,10]).
-cliente(6,[12,14]).
-cliente(7,[11,16]).
-cliente(8,[13]).
-cliente(9,[18]).
-cliente(10,[17,19]).
-cliente(11,[15,20]).
+cliente(1,[2,4,51,59,72,79,85]).
+cliente(2,[5,41,50,52,65]).
+cliente(3,[1,9,56,61,69,80,82]).
+cliente(4,[3,6,42,47,76,89]).
+cliente(5,[7,8,10,58,71,84]).
+cliente(6,[12,14,55,68,73,81]).
+cliente(7,[11,16,40,46,54,60,75,86,91]).
+cliente(8,[13,43,48,53,64,77,90]).
+cliente(9,[18,44,49,62,67,74]).
+cliente(10,[17,19,57,70,78,83,87,93]).
+cliente(11,[15,20,45,63,66,88,92]).
 
 %Extensão do Predicado meioTransporte: Veiculo, PesoMaximo, VelocidadeMedia, Taxa, ClassificaçaoEcologica-> {V,F}.
 %meioTransporte/5
@@ -154,10 +154,35 @@ morada(7,ruaNovaCruz, sao_vitor,41.555884, -8.401906).
 morada(8,pracaDoBocage, sao_vitor,41.555884, -8.401906).
 morada(9,ruaSaoJoao,manhente,41.547938, -8.621399).
 morada(10,ruaPadreGiesteira,marinhas,41.544324, -8.784028).
-
-
-
-
+				%Adicionadas.
+morada(11,ruaDaRocha,caminha,41.881815,-8.816272).
+morada(12,ruaDoRovial,caminha,41.848053,-8.853980).
+morada(13,ruaDoRouxico,caminha,41.844075,-8.866999).
+morada(14,ruaDoRoncal,caminha,41.905238,-8.799445).
+morada(15,ruaCentralDaEscola,amarante,41.278119,-8.058343).
+morada(16,ruaDaPortela,amarante,41.260217,-8.086627).
+morada(17,ruaDaTapada,amarante,41.290806,-8.103075).
+morada(18,ruaDoForcado,amarante,41.316165,-8.114792).
+morada(19,ruaDoPomar,amarante,41.280452,-8.207678).
+morada(20,ruaDaRelvinha,leiria,39.788730,-8.748457).
+morada(21,ruaDaResil,leiria,39.829484,-8.726387).
+morada(22,ruaDaRosa,leiria,39.812974,-8.752830).
+morada(23,ruaDoRibeiro,leiria,39.776065,-8.822998).
+morada(24,ruaDasFontainhas,lamego,41.101168,-7.814401).
+morada(25,ruaDaMazeda,lamego,41.094981,-7.810395).
+morada(26,ruaDasCortes,lamego,41.099345,-7.812701).
+morada(27,ruaDoTeatro,lamego,41.096807,-7.811070).
+morada(28,ruaDoCastelo,lamego,41.098376,-7.810755).
+morada(29,ruaTabaleao,tondela,40.513672,-8.092147).
+morada(30,ruaDaCal,tondela,40.588022,-8.031365).
+morada(31,ruaDaFraga,tondela,40.504475,-7.990560).
+morada(32,ruaAltoBairro,tondela,40.536921,-8.084464).
+morada(33,ruaDoMeal,tondela,40.491108,-8.093568).
+morada(34,ruaDoSol,amadora,38.744130,-9.217829).
+morada(35,ruaSantoAntonio,amadora,38.756414,-9.241912).
+morada(36,ruaDomDinis,amadora,38.752439,-9.233433).
+morada(37,ruaDiasCoelho,amadora,38.768951,-9.217987).
+morada(38,ruaFernaoLopes,amadora,38.757007,-9.212166).
 
 
 %ver idCliente, ou cliente com lista de entregas
@@ -193,6 +218,64 @@ entrega(14,6,3,6,data(13,26,9,2021),data(16,26,9,2021),3).
 %entrega(18,9,2,9,data(16,8,11,2021),data(15,8,11,2021),4).
 %entrega(19,10,4,4,data(13,24,10,2021),data(12,24,10,2021),4).
 %entrega(20,1,1,4,data(9,25,11,2021),data(8,25,11,2021),3).
+%___
+entrega(40,7,2,11,data(10,10,11,2021),data(12,10,11,2021),3).
+entrega(41,7,3,11,data(9,18,6,2021),data(16,18,6,2021),3).
+entrega(42,4,4,12,data(10,11,7,2021),data(13,11,7,2021),5).
+entrega(43,8,5,12,data(8,16,5,2021),data(11,16,5,2021),4).
+entrega(44,7,1,13,data(8,1,4,2021),data(10,1,4,2021),2).
+entrega(45,7,1,13,data(2,18,11,2021),data(5,10,11,2021),3).
+entrega(46,7,2,14,data(8,18,6,2021),data(14,18,6,2021),3).
+entrega(47,4,3,14,data(10,11,7,2021),data(18,11,7,2021),5).
+entrega(48,8,4,15,data(8,16,5,2021),data(9,16,5,2021),4).
+entrega(49,7,5,15,data(11,1,4,2021),data(22,1,4,2021),2).
+entrega(50,7,2,16,data(2,18,11,2021),data(5,10,11,2021),3).
+entrega(51,7,3,16,data(8,18,6,2021),data(14,18,6,2021),3).
+entrega(52,4,1,17,data(10,11,7,2021),data(18,11,7,2021),5).
+entrega(53,8,4,17,data(8,16,5,2021),data(9,16,5,2021),4).
+entrega(54,7,5,18,data(11,1,4,2021),data(22,1,4,2021),2).
+entrega(55,6,4,18,data(16,1,2,2021),data(19,1,2,2021),4).
+entrega(56,3,5,19,data(9,31,9,2021),data(21,31,9,2021),4).
+entrega(57,10,4,19,data(13,24,10,2021),data(17,24,10,2021),4).
+entrega(58,5,2,20,data(14,23,11,2021),data(21,23,11,2021),3).
+entrega(59,1,2,20,data(12,22,11,2021),data(20,22,11,2021),2).
+entrega(60,7,1,21,data(2,1,7,2021),data(4,1,7,2021),2).
+entrega(61,7,1,21,data(15,12,12,2021),data(17,12,12,2021),3).
+entrega(62,7,2,22,data(8,18,6,2021),data(14,18,6,2021),3).
+entrega(63,4,3,22,data(10,11,7,2021),data(18,11,7,2021),5).
+entrega(64,8,4,23,data(8,16,5,2021),data(9,16,5,2021),4).
+entrega(65,7,5,23,data(11,1,4,2021),data(17,1,4,2021),2).
+entrega(66,7,2,24,data(3,18,1,2021),data(5,10,1,2021),3).
+entrega(67,7,3,24,data(9,11,11,2021),data(14,11,11,2021),3).
+
+entrega(68,6,1,25,data(3,5,4,2021),data(7,5,4,2021),4).
+entrega(69,3,2,25,data(19,21,1,2021),data(21,21,1,2021),4).
+entrega(70,10,3,26,data(13,22,2,2021),data(17,22,2,2021),4).
+entrega(71,5,4,26,data(14,9,9,2021),data(19,9,9,2021),3).
+entrega(72,1,2,27,data(22,22,11,2021),data(23,22,11,2021),2).
+entrega(73,7,5,27,data(2,8,9,2021),data(4,8,9,2021),2).
+entrega(74,7,5,28,data(15,12,12,2021),data(17,12,12,2021),3).
+entrega(75,7,2,28,data(18,8,6,2021),data(20,8,6,2021),3).
+entrega(76,4,3,29,data(10,1,9,2021),data(18,1,9,2021),5).
+entrega(77,8,4,29,data(8,16,5,2021),data(9,16,5,2021),4).
+entrega(78,7,3,30,data(11,1,4,2021),data(17,1,4,2021),2).
+entrega(79,7,2,30,data(3,18,1,2021),data(5,10,1,2021),3). 
+
+entrega(80,3,1,31,data(9,11,11,2021),data(14,11,11,2021),3).
+entrega(81,6,2,31,data(3,5,4,2021),data(7,5,4,2021),4).
+entrega(82,3,3,32,data(19,21,1,2021),data(21,21,1,2021),4).
+entrega(83,10,3,32,data(13,22,2,2021),data(17,22,2,2021),4).
+entrega(84,5,4,33,data(12,19,4,2021),data(17,19,4,2021),3).
+entrega(85,1,2,34,data(22,22,11,2021),data(23,22,11,2021),2).
+entrega(86,7,1,34,data(2,8,9,2021),data(4,8,9,2021),2).
+entrega(87,10,5,35,data(15,2,2,2021),data(17,2,2,2021),3).
+entrega(88,11,2,35,data(12,8,1,2021),data(20,8,1,2021),3).
+entrega(89,4,3,36,data(10,1,9,2021),data(18,1,9,2021),5).
+entrega(90,8,1,37,data(8,16,5,2021),data(9,16,5,2021),4).
+entrega(91,7,3,37,data(11,1,4,2021),data(17,1,4,2021),2).
+entrega(92,11,3,38,data(13,20,12,2021),data(15,20,12,2021),3).
+entrega(93,10,1,38,data(10,7,11,2021),data(14,7,11,2021),3).
+
 
 
 
@@ -209,18 +292,64 @@ encomenda(8,77,154).
 encomenda(9,3,6).
 encomenda(10,15,30).
 encomenda(11,11,22).
-
 encomenda(12,20,40).
 encomenda(13,5,10).
 encomenda(14,22,44).
-encomenda(15,24,48).
-encomenda(16,19,38).
-encomenda(17,1,2).
-encomenda(18,4,8).
-encomenda(19,75,150).
-encomenda(20,7,14).
 
-
+encomenda(40,7,14).
+encomenda(41,20,40).
+encomenda(42,5,10).
+encomenda(43,18,36).
+encomenda(44,100,200).
+encomenda(45,34,68).
+encomenda(46,71,142).
+encomenda(47,2,4).
+encomenda(48,77,154).
+encomenda(49,3,6).
+encomenda(50,15,30).
+encomenda(51,11,22).
+encomenda(52,20,40).
+encomenda(53,5,10).
+encomenda(54,18,36).
+encomenda(55,100,200).
+encomenda(56,34,68).
+encomenda(57,71,142).
+encomenda(58,2,4).
+encomenda(59,77,154).
+encomenda(60,3,6).
+encomenda(61,15,30).
+encomenda(62,11,22).
+encomenda(63,5,10).
+encomenda(64,22,44).
+encomenda(65,24,48).
+encomenda(66,19,38).
+encomenda(67,1,2).
+encomenda(68,4,8).
+encomenda(69,75,150).
+encomenda(70,7,14).
+encomenda(71,20,40).
+encomenda(72,5,10).
+encomenda(73,18,36).
+encomenda(74,100,200).
+encomenda(75,34,68).
+encomenda(76,71,142).
+encomenda(77,2,4).
+encomenda(78,77,154).
+encomenda(79,3,6).
+encomenda(80,15,30).
+encomenda(81,11,22).
+encomenda(82,20,40).
+encomenda(83,5,10).
+encomenda(84,22,44).
+encomenda(85,24,48).
+encomenda(86,19,38).
+encomenda(87,1,2).
+encomenda(88,4,8).
+encomenda(89,75,150).
+encomenda(90,7,14).
+encomenda(91,20,40).
+encomenda(92,5,10).
+encomenda(93,18,36).
 
 %Extensão do Predicado TaxaPrazo: Duração, Preco->{V,F}
 taxaPrazo(0, 9). 
@@ -247,12 +376,61 @@ precoServico(11,2,mota,34,49).
 precoServico(12,4,mota,154,167).
 precoServico(13,1,bicicleta,1000,1014).
 precoServico(14,25,carro,300,315.8).
-precoServico(15,14,carro,89,106).
-precoServico(16,13,mota,10,22).
-precoServico(17,1,bicicleta,11,25).
-precoServico(18,1,bicicleta,200,214).
-precoServico(19,3,carro,150,170).
-precoServico(20,2,mota,154,169).
+
+precoServico(40,1,mota,36,55).
+precoServico(41,4,mota,24,37).
+precoServico(42,1,bicicleta,71,85).               
+precoServico(43,2.5,mota,110,115).
+precoServico(44,3,carro,51,71).                    
+precoServico(45,0.5,carro,72,96).
+precoServico(46,5,carro,2,19).
+precoServico(47,5,bicicleta,15,23).
+precoServico(48,6,carro,15,33).
+precoServico(49,7,bicicleta,22,30).
+precoServico(50,1,mota,36,55).
+precoServico(51,4,mota,24,37).
+precoServico(52,1,bicicleta,71,85).               
+precoServico(53,2.5,mota,110,115).
+precoServico(54,3,carro,51,71).                   
+precoServico(55,0.5,carro,72,96).
+precoServico(56,5,carro,2,19).
+precoServico(57,5,bicicleta,15,23).
+precoServico(58,6,carro,15,33).
+precoServico(59,7,bicicleta,22,30).
+precoServico(60,1,mota,36,55).
+precoServico(61,4,mota,24,37).
+precoServico(62,1,bicicleta,71,85).               
+precoServico(63,2.5,mota,110,115).
+precoServico(64,3,carro,51,71).                    
+precoServico(65,0.5,carro,72,96).
+precoServico(66,5,carro,2,19).
+precoServico(67,5,bicicleta,15,23).
+precoServico(68,6,carro,15,33).
+precoServico(69,7,bicicleta,22,30).
+precoServico(70,1,mota,36,55).
+precoServico(71,4,mota,24,37).
+precoServico(72,1,bicicleta,71,85).                
+precoServico(73,2.5,mota,110,115).
+precoServico(74,3,carro,51,71).                    
+precoServico(75,0.5,carro,72,96).
+precoServico(76,5,carro,2,19).
+precoServico(77,5,bicicleta,15,23).
+precoServico(78,6,carro,15,33).
+precoServico(79,7,bicicleta,22,30).
+precoServico(80,1,mota,36,55).
+precoServico(81,4,mota,24,37).
+precoServico(82,1,bicicleta,71,85).                
+precoServico(83,2.5,mota,110,115).
+precoServico(84,3,carro,51,71).                    
+precoServico(85,0.5,carro,72,96).
+precoServico(86,5,carro,2,19).
+precoServico(87,5,bicicleta,15,23).
+precoServico(88,6,carro,15,33).
+precoServico(89,7,bicicleta,22,30).
+precoServico(90,1,mota,36,55).
+precoServico(91,6,carro,15,33).
+precoServico(92,7,bicicleta,22,30).
+precoServico(93,1,mota,36,55).
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -530,11 +708,20 @@ mostEcologicCircuit(IdEntrega,Result):-entrega(IdEntrega,_,_,IdMorada,DataInicia
 								  dataMaior(DataFinal,DataInicial),
 								  encomenda(IdEntrega,Peso,_),
 								  morada(IdMorada,Rua,_,X1,Y1),
-								  estima(Rua,Estima).
+								  estima(Rua,Estima),
 								 custoDerivadoTransport(Estima,Peso,DataInicial,DataFinal,Temp),
-								 Result is 1. %% só par compilar o resto.
+								 Result is 1. %% só para compilar o resto.
 
-custoDerivadoTransport(DistE,Peso,DataInicial,DataFinal,Result):-
+
+custoDerivadoTransport(DistE,Peso,DataInicial,DataFinal,Result):-trueSpeed(bicicleta,Peso,VBicicleta),
+																 VBicicleta >0,
+																 effDeliveryTime(VBicicleta,DistE,TimeBicicleta),
+																 hourDateSum(TimeBicicleta,DataInicial,DataFinalE),
+																 dataCompreendida(DataInicial,DataFinalE,DataFinal).
+
+%sadge :C
+
+
 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
