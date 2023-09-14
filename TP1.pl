@@ -17,7 +17,6 @@
 %:- dynamic distanciaPontos/5
 
 
-% I don't know what this does but SWI Prolog told me to put it here so I will
 :- discontiguous (+)/1.
 
  pack_install(date_time).
